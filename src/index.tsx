@@ -24,3 +24,5 @@ export const AirwallexPaymentReactNativeView =
     : () => {
         throw new Error(LINKING_ERROR);
       };
+
+export * from './functions';

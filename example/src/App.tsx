@@ -1,10 +1,10 @@
-import { StyleSheet, View } from 'react-native';
-import { AirwallexPaymentReactNativeView } from 'airwallex-payment-react-native';
+import { Button, StyleSheet, View } from 'react-native';
+import { presentPaymentFlow } from 'airwallex-payment-react-native';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <AirwallexPaymentReactNativeView color="#32a852" style={styles.box} />
+      <Button onPress={() => presentPaymentFlow([])} title="Check out" />
     </View>
   );
 }
