@@ -41,7 +41,7 @@ extension AirwallexSdk {
     private func buildRecurringSession(from params: NSDictionary) -> AWXRecurringSession {
         let session = AWXRecurringSession()
         session.configure(params: params)
-        session.setAmount(params["amount"] as! NSDecimalNumber)
+        session.setAmount(NSDecimalNumber(decimal: (params["amount"] as! NSNumber).decimalValue))
         session.setCurrency(params["currency"] as! String)
         session.setCustomerId(params["customerId"] as? String)
         if let nextTriggerBy = AirwallexNextTriggerByType.from(params["NextTriggeredBy"] as! String) {
@@ -94,7 +94,7 @@ private extension AWXPaymentIntent {
     convenience init(params: NSDictionary) {
         self.init()
         id = params["paymentIntentId"] as! String
-        amount = params["amount"] as! NSDecimalNumber
+        amount = NSDecimalNumber(decimal: (params["amount"] as! NSNumber).decimalValue)
         currency = params["currency"] as! String
         customerId = params["customerId"] as? String
     }
@@ -102,7 +102,7 @@ private extension AWXPaymentIntent {
 
 private extension AirwallexNextTriggerByType {
     static func from(_ stringValue: String) -> Self? {
-        return switch stringValue {
+        switch stringValue {
         case "merchant":
             .merchantType
         case "customer": 
@@ -115,7 +115,7 @@ private extension AirwallexNextTriggerByType {
 
 private extension AirwallexMerchantTriggerReason {
     static func from(_ stringValue: String) -> Self? {
-        return switch stringValue {
+        switch stringValue {
         case "unscheduled":
             .unscheduled
         case "scheduled":

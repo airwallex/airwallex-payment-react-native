@@ -3,7 +3,6 @@ import type { ApplePayOptions } from './ApplePayOptions';
 import type { NextTriggeredBy, MerchantTriggerReason } from './PaymentConsent';
 
 interface BaseSession {
-  clientSecret: string;
   customerId?: string;
   shipping?: Shipping;
   isBillingRequired?: boolean;

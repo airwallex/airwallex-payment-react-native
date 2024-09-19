@@ -1,7 +1,12 @@
 import { NativeModules } from 'react-native';
+import type { PaymentSession } from './types';
 
 type NativeAirwallexSdkType = {
-  presentPaymentFlow(params: {}): Promise<void>;
+  presentPaymentFlow(
+    clientSecret: string,
+    session: PaymentSession,
+    environment: 'staging' | 'demo' | 'production'
+  ): Promise<void>;
 };
 
 const { AirwallexSdk } = NativeModules;

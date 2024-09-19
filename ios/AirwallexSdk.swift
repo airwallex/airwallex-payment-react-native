@@ -6,31 +6,17 @@ class AirwallexSdk: RCTEventEmitter, AWXPaymentResultDelegate {
     private var resolve: RCTPromiseResolveBlock?
     private var reject: RCTPromiseRejectBlock?
     
-    @objc(presentPaymentFlow:resolver:rejecter:)
-    func presentPaymentFlow(params: NSDictionary, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+    @objc(presentPaymentFlow:session:environment:resolver:rejecter:)
+    func presentPaymentFlow(clientSecret: String, session: NSDictionary, environment: String, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
         self.resolve = resolve
         self.reject = reject
         
-        Airwallex.setMode(.stagingMode)
-        let clientSecret = params["clientSecret"] as! String
+        if let mode = AirwallexSDKMode.from(environment) {
+            Airwallex.setMode(mode)
+        }
         AWXAPIClientConfiguration.shared().clientSecret = clientSecret
         
-        let session = AWXOneOffSession()
-        
-        let options = AWXApplePayOptions(merchantIdentifier: "")
-        options.additionalPaymentSummaryItems = [.init(label: "goods", amount: 2), .init(label: "tax", amount: 1)]
-        options.totalPriceLabel = "COMPANY, INC."
-        
-        let paymentIntent = AWXPaymentIntent()
-        paymentIntent.amount = 1
-        paymentIntent.currency = "USD"
-        paymentIntent.id = "int_hkst2h9kngzv1yyp2tb"
-        
-        session.applePayOptions = options
-        session.countryCode = "US"
-        session.returnURL = ""
-        session.paymentIntent = paymentIntent
-        session.autoCapture = true
+        let session = buildAirwallexSession(from: session)
         
         let context = AWXUIContext.shared()
         context.delegate = self
@@ -44,6 +30,21 @@ class AirwallexSdk: RCTEventEmitter, AWXPaymentResultDelegate {
     func paymentViewController(_ controller: UIViewController, didCompleteWith status: AirwallexPaymentStatus, error: Error?) {
         controller.dismiss(animated: true) {
             
+        }
+    }
+}
+
+private extension AirwallexSDKMode {
+    static func from(_ stringValue: String) -> Self? {
+        switch stringValue {
+        case "staging":
+            .stagingMode
+        case "demo":
+            .demoMode
+        case "production":
+            .productionMode
+        default:
+            nil
         }
     }
 }
