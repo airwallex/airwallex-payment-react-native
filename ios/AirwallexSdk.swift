@@ -12,7 +12,8 @@ class AirwallexSdk: RCTEventEmitter, AWXPaymentResultDelegate {
         self.reject = reject
         
         Airwallex.setMode(.stagingMode)
-        AWXAPIClientConfiguration.shared().clientSecret = "eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MjYxMzE3MzMsImV4cCI6MTcyNjEzNTMzMywidHlwZSI6ImNsaWVudC1zZWNyZXQiLCJwYWRjIjoiSEsiLCJhY2NvdW50X2lkIjoiYjlmYzY1ZDktNzJlNS00Yzc2LThkNDMtYjc5ZmEyYmE2ZGZhIiwiaW50ZW50X2lkIjoiaW50X2hrc3QyaDlrbmd6djF5eXAydGIiLCJidXNpbmVzc19uYW1lIjoiU2F3YXluLCBPJ0Nvbm5lciBhbmQgUXVpZ2xleSJ9.Lo0dBZkK_c0Do4jb3wni8IJH0FvPGHjV5aWErj96P-0"
+        let clientSecret = params["clientSecret"] as! String
+        AWXAPIClientConfiguration.shared().clientSecret = clientSecret
         
         let session = AWXOneOffSession()
         
