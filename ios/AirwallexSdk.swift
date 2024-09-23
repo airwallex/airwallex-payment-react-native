@@ -5,6 +5,7 @@ import Foundation
 class AirwallexSdk: RCTEventEmitter, AWXPaymentResultDelegate {
     private var resolve: RCTPromiseResolveBlock?
     private var reject: RCTPromiseRejectBlock?
+    private var paymentConsentID: String?
     
     @objc(presentPaymentFlow:session:environment:resolver:rejecter:)
     func presentPaymentFlow(clientSecret: String, session: NSDictionary, environment: String, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
@@ -31,7 +32,11 @@ class AirwallexSdk: RCTEventEmitter, AWXPaymentResultDelegate {
         controller.dismiss(animated: true) {
             switch status {
             case .success:
-                self.resolve?(["status": "success"])
+                var successDict = ["status": "success"]
+                if let consentID = self.paymentConsentID {
+                    successDict["paymentConsentId"] = consentID
+                }
+                self.resolve?(successDict)
             case .inProgress:
                 self.resolve?(["status": "inProgress"])
             case .failure:
@@ -42,6 +47,10 @@ class AirwallexSdk: RCTEventEmitter, AWXPaymentResultDelegate {
             self.resolve = nil
             self.reject = nil
         }
+    }
+    
+    func paymentViewController(_ controller: UIViewController, didCompleteWithPaymentConsentId paymentConsentId: String) {
+        self.paymentConsentID = paymentConsentId
     }
 }
 

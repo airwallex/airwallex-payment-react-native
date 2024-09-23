@@ -5,7 +5,8 @@ import type { PaymentSession } from 'airwallex-payment-react-native';
 export default function App() {
   const session: PaymentSession = {
     type: 'OneOff',
-    paymentIntentId: 'int_hkstv7nzsh06wdxyu59',
+    customerId: 'cus_hkstv7nzsh06x60jtoy',
+    paymentIntentId: 'int_hkstv7nzsh06xbvy8dg',
     currency: 'AUD',
     countryCode: 'AU',
     amount: 1,
@@ -17,18 +18,15 @@ export default function App() {
     <View style={styles.container}>
       <Button
         onPress={() =>
-          presentPaymentFlow(
-            'eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MjcwNTk5NDgsImV4cCI6MTcyNzA2MzU0OCwidHlwZSI6ImNsaWVudC1zZWNyZXQiLCJwYWRjIjoiSEsiLCJhY2NvdW50X2lkIjoiYjlmYzY1ZDktNzJlNS00Yzc2LThkNDMtYjc5ZmEyYmE2ZGZhIiwiaW50ZW50X2lkIjoiaW50X2hrc3R2N256c2gwNndkeHl1NTkiLCJidXNpbmVzc19uYW1lIjoiU2F3YXluLCBPJ0Nvbm5lciBhbmQgUXVpZ2xleSJ9.3gSgPca1XswwrUcy-_xHW9X9puJe99hXT06i74Smuaw',
-            session,
-            'staging'
-          )
+          presentPaymentFlow('', session, 'staging')
             .then((result) => {
               switch (result.status) {
                 case 'success':
-                  Alert.alert(
-                    'Payment success',
-                    'Your payment has been charged'
-                  );
+                  let message = 'Your payment has been charged';
+                  if (result.paymentConsentId) {
+                    message += ` with payment consent ID ${result.paymentConsentId}`;
+                  }
+                  Alert.alert('Payment success', message);
                   break;
                 case 'inProgress':
                   console.log('Payment in progress');
