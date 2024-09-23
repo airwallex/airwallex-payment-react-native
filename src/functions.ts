@@ -1,19 +1,15 @@
 import NativeAirwallexSdk from './NativeAirwallexSdk';
 import type { PaymentSession } from './types';
+import type { PaymentResult } from './types/PaymentResult';
 
 export const presentPaymentFlow = async (
   clientSecret: string,
   session: PaymentSession,
   environment: 'staging' | 'demo' | 'production' = 'demo'
-): Promise<void> => {
-  try {
-    await NativeAirwallexSdk.presentPaymentFlow(
-      clientSecret,
-      session,
-      environment
-    );
-  } catch (error: any) {
-    console.log(error);
-    return;
-  }
+): Promise<PaymentResult> => {
+  return NativeAirwallexSdk.presentPaymentFlow(
+    clientSecret,
+    session,
+    environment
+  );
 };

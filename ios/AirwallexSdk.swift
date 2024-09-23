@@ -29,7 +29,18 @@ class AirwallexSdk: RCTEventEmitter, AWXPaymentResultDelegate {
     
     func paymentViewController(_ controller: UIViewController, didCompleteWith status: AirwallexPaymentStatus, error: Error?) {
         controller.dismiss(animated: true) {
-            
+            switch status {
+            case .success:
+                self.resolve?(["status": "success"])
+            case .inProgress:
+                self.resolve?(["status": "inProgress"])
+            case .failure:
+                self.reject?((String((error as? NSError)?.code ?? -1)), error?.localizedDescription, error)
+            case .cancel:
+                self.resolve?(["status": "cancelled"])
+            }
+            self.resolve = nil
+            self.reject = nil
         }
     }
 }
