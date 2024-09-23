@@ -10,15 +10,36 @@ npm install airwallex-payment-react-native
 
 ## Usage
 
-
 ```js
-import { AirwallexPaymentReactNativeView } from "airwallex-payment-react-native";
+import { presentPaymentFlow } from 'airwallex-payment-react-native';
+import type { PaymentSession } from 'airwallex-payment-react-native';
 
 // ...
 
-<AirwallexPaymentReactNativeView color="tomato" />
-```
+const session: PaymentSession = {
+    type: 'OneOff',
+    customerId: 'cus_xxx',
+    paymentIntentId: 'int_xxx',
+    currency: 'AUD',
+    countryCode: 'AU',
+    amount: 1,
+    isBillingRequired: false,
+    paymentMethods: ['card'],
+  };
+presentPaymentFlow('Your client secret', session, 'staging')
+    .then((result) => {
+        switch (result.status) {
+            // handle different payment result status in your UI
+            case 'success':
+            case 'inProgress':
+            case 'cancelled':
+        }
+    })
+    .catch(
+        (error) => // handle error cases
+    )
 
+```
 
 ## Contributing
 
