@@ -6,6 +6,7 @@ interface BaseSession {
   customerId?: string;
   shipping?: Shipping;
   isBillingRequired?: boolean;
+  isEmailRequired?: boolean;
   currency: string;
   countryCode: string;
   amount: number;
@@ -24,12 +25,14 @@ export interface OneOffSession extends BaseSession {
 
 export interface RecurringSession extends BaseSession {
   type: 'Recurring';
+  customerId: string;
   nextTriggeredBy: NextTriggeredBy;
   merchantTriggerReason: MerchantTriggerReason;
 }
 
 export interface RecurringWithIntentSession extends BaseSession {
   type: 'RecurringWithIntent';
+  customerId: string;
   paymentIntentId: string;
   autoCapture?: boolean;
   nextTriggeredBy: NextTriggeredBy;
