@@ -1,2 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+  <application>
+    <provider
+      android:name=".AirwallexPaymentInitProvider"
+      android:authorities="com.airwallexpaymentreactnative.provider"
+      android:exported="false" />
+  </application>
+
 </manifest>

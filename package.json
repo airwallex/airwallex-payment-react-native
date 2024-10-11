@@ -183,5 +183,8 @@
     "type": "view-legacy",
     "languages": "kotlin-swift",
     "version": "0.41.1"
+  },
+  "dependencies": {
+    "axios": "^1.7.7"
   }
 }

@@ -1,48 +1,57 @@
 import { Button, StyleSheet, View, Alert } from 'react-native';
 import { presentPaymentFlow } from 'airwallex-payment-react-native';
-import type { PaymentSession } from 'airwallex-payment-react-native';
+import PaymentService from './api/PaymentService';
+import SessionCreator from './util/SessionCreator';
 
 export default function App() {
-  const session: PaymentSession = {
-    type: 'OneOff',
-    customerId: 'cus_hkstv7nzsh06x60jtoy',
-    paymentIntentId: 'int_hkstv7nzsh06xbvy8dg',
-    currency: 'AUD',
-    countryCode: 'AU',
-    amount: 1,
-    isBillingRequired: false,
-    paymentMethods: ['card'],
+  const apiUrl = 'https://demo-pacheckoutdemo.airwallex.com';
+  const paymentService = new PaymentService(apiUrl, '', '');
+
+  async function fetchSession() {
+    try {
+      const session = await SessionCreator.createOneOffSession(paymentService);
+      console.log('Payment Session:', session);
+      return session;
+    } catch (error) {
+      console.error('Error creating payment session:', error);
+      Alert.alert('Error', 'Failed to create payment session.');
+      return null;
+    }
+  }
+
+  const handlePress = async () => {
+    let session = await fetchSession();
+    if (session) {
+      presentPaymentFlow(session.clientSecret ?? '', session, 'demo')
+        .then((result) => {
+          switch (result.status) {
+            case 'success':
+              let message = 'Your payment has been charged';
+              if (result.paymentConsentId) {
+                message += ` with payment consent ID ${result.paymentConsentId}`;
+              }
+              Alert.alert('Payment success', message);
+              break;
+            case 'inProgress':
+              console.log('Payment in progress');
+              break;
+            case 'cancelled':
+              Alert.alert(
+                'Payment cancelled',
+                'Your payment has been cancelled'
+              );
+              break;
+          }
+        })
+        .catch((error) => Alert.alert('Payment failed', error.message));
+    } else {
+      Alert.alert('Error', 'Session could not be created.');
+    }
   };
 
   return (
     <View style={styles.container}>
-      <Button
-        onPress={() =>
-          presentPaymentFlow('', session, 'staging')
-            .then((result) => {
-              switch (result.status) {
-                case 'success':
-                  let message = 'Your payment has been charged';
-                  if (result.paymentConsentId) {
-                    message += ` with payment consent ID ${result.paymentConsentId}`;
-                  }
-                  Alert.alert('Payment success', message);
-                  break;
-                case 'inProgress':
-                  console.log('Payment in progress');
-                  break;
-                case 'cancelled':
-                  Alert.alert(
-                    'Payment cancelled',
-                    'Your payment has been cancelled'
-                  );
-                  break;
-              }
-            })
-            .catch((error) => Alert.alert('Payment failed', error.message))
-        }
-        title="Check out"
-      />
+      <Button onPress={handlePress} title="Check out" />
     </View>
   );
 }

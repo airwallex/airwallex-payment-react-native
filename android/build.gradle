@@ -8,7 +8,8 @@ buildscript {
   }
 
   dependencies {
-    classpath "com.android.tools.build:gradle:7.2.2"
+//    classpath "com.android.tools.build:gradle:7.2.2"
+    classpath "com.android.tools.build:gradle:8.3.2"
     // noinspection DifferentKotlinGradleVersion
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
   }
@@ -95,5 +96,15 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+  implementation 'androidx.appcompat:appcompat:1.7.0'
+  implementation 'androidx.core:core-ktx:1.13.1'
+  implementation 'androidx.activity:activity-ktx:1.9.2'
+
+  implementation 'io.github.airwallex:payment:6.0.1'
+  implementation 'io.github.airwallex:payment-card:6.0.1'
+  implementation 'io.github.airwallex:payment-redirect:6.0.1'
+  implementation 'io.github.airwallex:payment-wechat:6.0.1'
+  implementation 'io.github.airwallex:payment-googlepay:6.0.1'
 }
 
