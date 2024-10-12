@@ -36,11 +36,12 @@ class SessionCreator {
       const session: PaymentSession = {
         type: 'OneOff',
         customerId: '',
+        shipping: this.createShipping(),
         paymentIntentId: paymentIntentId,
         currency: currency,
         countryCode: 'UK',
         amount: amount,
-        isBillingRequired: false,
+        isBillingRequired: true,
         isEmailRequired: false,
         returnUrl:
           'airwallexcheckout://com.example.airwallex_payment_flutter_example',
