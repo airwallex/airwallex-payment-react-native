@@ -61,15 +61,25 @@ android {
 
   compileSdkVersion getExtOrIntegerDefault("compileSdkVersion")
 
+  buildFeatures {
+    buildConfig = true
+  }
+
   defaultConfig {
     minSdkVersion getExtOrIntegerDefault("minSdkVersion")
     targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
-
   }
+
+  def releaseEnv = project.hasProperty('env') ? project.env : "production"
+  def debugEnv = project.hasProperty('env') ? project.env : "demo"
 
   buildTypes {
     release {
       minifyEnabled false
+      buildConfigField "String", "ENV", "\"${releaseEnv}\""
+    }
+    debug {
+      buildConfigField "String", "ENV", "\"${debugEnv}\""
     }
   }
 

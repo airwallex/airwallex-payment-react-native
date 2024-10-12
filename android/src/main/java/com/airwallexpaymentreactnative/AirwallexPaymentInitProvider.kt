@@ -19,7 +19,7 @@ class AirwallexPaymentInitProvider : ContentProvider() {
   override fun onCreate(): Boolean {
     context?.let {
       val application = it as Application
-      val environment = getEnvironment(it)
+      val environment = getEnvironment()
       initAirwallexStarter(application, environment)
       initAirwallex(application, environment)
     }
@@ -64,8 +64,14 @@ class AirwallexPaymentInitProvider : ContentProvider() {
     )
   }
 
-  private fun getEnvironment(context: Context): Environment {
-    return Environment.DEMO
+  private fun getEnvironment(): Environment {
+    val environment: String = BuildConfig.ENV
+    return when (environment) {
+      Environment.STAGING.value -> Environment.STAGING
+      Environment.DEMO.value -> Environment.DEMO
+      Environment.PRODUCTION.value -> Environment.PRODUCTION
+      else -> Environment.DEMO
+    }
   }
 
   override fun query(
