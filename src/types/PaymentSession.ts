@@ -1,5 +1,6 @@
 import type { Shipping } from './Shipping';
 import type { ApplePayOptions } from './ApplePayOptions';
+import type { GooglePayOptions } from './GooglePayOptions';
 import type { NextTriggeredBy, MerchantTriggerReason } from './PaymentConsent';
 
 interface BaseSession {
@@ -11,7 +12,7 @@ interface BaseSession {
   countryCode: string;
   amount: number;
   returnUrl?: string;
-  //googlePayOptions?: GooglePayOptions;
+  googlePayOptions?: GooglePayOptions;
   applePayOptions?: ApplePayOptions;
   paymentMethods?: string[];
   clientSecret?: string;

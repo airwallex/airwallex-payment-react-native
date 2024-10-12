@@ -1,4 +1,8 @@
 import type { Shipping, PaymentSession } from 'airwallex-payment-react-native';
+import {
+  googlePaySupportedNetworks,
+  Format,
+} from 'airwallex-payment-react-native';
 import PaymentService from '../api/PaymentService';
 import { getPaymentParams } from '../api/PaymentParams';
 
@@ -36,14 +40,18 @@ class SessionCreator {
         currency: currency,
         countryCode: 'UK',
         amount: amount,
-        isBillingRequired: true,
+        isBillingRequired: false,
         isEmailRequired: false,
         returnUrl:
           'airwallexcheckout://com.example.airwallex_payment_flutter_example',
-        // googlePayOptions: {
-        //   billingAddressRequired: true,
-        //   billingAddressParameters: new BillingAddressParameters(Format.FULL),
-        // },
+        googlePayOptions: {
+          allowedCardNetworks: googlePaySupportedNetworks(),
+          billingAddressRequired: true,
+          billingAddressParameters: {
+            format: Format.FULL,
+            phoneNumberRequired: false,
+          },
+        },
         // paymentMethods: ['card'],
         autoCapture: true,
         hidePaymentConsents: false,
