@@ -14,6 +14,7 @@
     "build-production-apk": "cd android && ./gradlew assembleDebug -Penv=production"
   },
   "dependencies": {
+    "axios": "^1.7.7",
     "react": "18.3.1",
     "react-native": "0.75.2"
   },

@@ -3529,6 +3529,7 @@ __metadata:
     "@react-native/metro-config": 0.75.2
     "@react-native/typescript-config": 0.75.2
     "@rnx-kit/metro-config": ^2.0.0
+    axios: ^1.7.7
     react: 18.3.1
     react-native: 0.75.2
     react-native-builder-bob: ^0.30.2
@@ -3546,7 +3547,6 @@ __metadata:
     "@release-it/conventional-changelog": ^5.0.0
     "@types/jest": ^29.5.5
     "@types/react": ^18.2.44
-    axios: ^1.7.7
     commitlint: ^17.0.2
     del-cli: ^5.1.0
     eslint: ^8.51.0
