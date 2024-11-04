@@ -1,6 +1,7 @@
 buildscript {
   // Buildscript is evaluated before everything else so we can't use getExtOrDefault
   def kotlin_version = rootProject.ext.has("kotlinVersion") ? rootProject.ext.get("kotlinVersion") : project.properties["AirwallexPaymentReactNative_kotlinVersion"]
+  ext.airwallex_version = "6.0.4"
 
   repositories {
     google()
@@ -111,10 +112,10 @@ dependencies {
   implementation 'androidx.core:core-ktx:1.13.1'
   implementation 'androidx.activity:activity-ktx:1.9.2'
 
-  implementation 'io.github.airwallex:payment:6.0.1'
-  implementation 'io.github.airwallex:payment-card:6.0.1'
-  implementation 'io.github.airwallex:payment-redirect:6.0.1'
-  implementation 'io.github.airwallex:payment-wechat:6.0.1'
-  implementation 'io.github.airwallex:payment-googlepay:6.0.1'
+  implementation "io.github.airwallex:payment:$airwallex_version"
+  implementation "io.github.airwallex:payment-card:$airwallex_version"
+  implementation "io.github.airwallex:payment-redirect:$airwallex_version"
+  implementation "io.github.airwallex:payment-wechat:$airwallex_version"
+  implementation "io.github.airwallex:payment-googlepay:$airwallex_version"
 }
 

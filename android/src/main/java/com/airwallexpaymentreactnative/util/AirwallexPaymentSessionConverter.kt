@@ -9,7 +9,6 @@ import com.airwallex.android.core.model.Address
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PurchaseOrder
 import com.airwallex.android.core.model.Shipping
-import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import java.math.BigDecimal
 
@@ -151,22 +150,4 @@ object AirwallexPaymentSessionConverter {
       }.build()
     }
   }
-
-  private fun ReadableMap.getStringSafe(key: String): String? =
-    if (hasKey(key)) getString(key) else null
-
-  private fun ReadableMap.getBooleanSafe(key: String, defaultValue: Boolean = false): Boolean =
-    if (hasKey(key)) getBoolean(key) else defaultValue
-
-  private fun ReadableMap.getBooleanOrNullSafe(key: String): Boolean? =
-    if (hasKey(key)) getBoolean(key) else null
-
-  private fun ReadableMap.getDoubleSafe(key: String, defaultValue: Double = 0.0): Double =
-    if (hasKey(key)) getDouble(key) else defaultValue
-
-  private fun ReadableMap.getArraySafe(key: String): ReadableArray? =
-    if (hasKey(key)) getArray(key) else null
-
-  private fun ReadableMap.getMapSafe(key: String): ReadableMap? =
-    if (hasKey(key)) getMap(key) else null
 }
