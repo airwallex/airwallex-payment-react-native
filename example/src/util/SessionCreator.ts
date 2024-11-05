@@ -4,15 +4,23 @@ import {
   Format,
 } from 'airwallex-payment-react-native';
 import PaymentService from '../api/PaymentService';
-import { getPaymentParams } from '../api/PaymentParams';
+import { getCustomerParams, getPaymentParams } from '../api/PaymentParams';
 
 class SessionCreator {
   static async createOneOffSession(
-    paymentService: PaymentService
+    paymentService: PaymentService,
+    requireCustomerId: boolean = false
   ): Promise<PaymentSession> {
     try {
-      const paymentIntent =
-        await paymentService.createPaymentIntent(getPaymentParams());
+      let customerId = null;
+      if (requireCustomerId) {
+        const customerInfo =
+          await paymentService.createCustomer(getCustomerParams());
+        customerId = customerInfo.customer_id;
+      }
+      const paymentIntent = await paymentService.createPaymentIntent(
+        getPaymentParams(customerId)
+      );
 
       const paymentIntentId = paymentIntent.id;
       const clientSecret = paymentIntent.client_secret;

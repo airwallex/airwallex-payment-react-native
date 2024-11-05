@@ -2,7 +2,7 @@ function generateUniqueId() {
   return `req_${new Date().getTime()}_${Math.random().toString(36).substr(2, 9)}`;
 }
 
-export function getPaymentParams() {
+export function getPaymentParams(customerId: string | null) {
   return {
     apiKey: '',
     clientId: '',
@@ -27,5 +27,27 @@ export function getPaymentParams() {
     return_url:
       'airwallexcheckout://com.example.airwallex_payment_flutter_example',
     capture_method: 'automatic',
+    customer_id: customerId,
+  };
+}
+
+export function getCustomerParams() {
+  return {
+    apiKey: '',
+    clientId: '',
+    request_id: generateUniqueId(),
+    merchant_customer_id: generateUniqueId(),
+    first_name: 'John',
+    last_name: 'Doe',
+    email: 'john.doe@airwallex.com',
+    phone_number: '13800000000',
+    additional_info: {
+      registered_via_social_media: false,
+      registration_date: '2019-09-18',
+      first_successful_order_date: '2019-09-18',
+    },
+    metadata: {
+      id: 1,
+    },
   };
 }

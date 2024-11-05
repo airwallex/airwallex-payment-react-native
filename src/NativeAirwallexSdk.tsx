@@ -20,6 +20,11 @@ type NativeAirwallexSdkType = {
     session: PaymentSession
   ): Promise<PaymentResult>;
 
+  startGooglePay(
+    clientSecret: string,
+    session: PaymentSession
+  ): Promise<PaymentResult>;
+
   payWithCardDetails(
     clientSecret: string,
     session: PaymentSession,

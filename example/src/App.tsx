@@ -5,12 +5,14 @@ import {
   TouchableOpacity,
   Text,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import {
   initialize,
   payWithCardDetails,
   presentCardPaymentFlow,
   presentPaymentFlow,
+  startGooglePay,
 } from 'airwallex-payment-react-native';
 import PaymentService from './api/PaymentService';
 import SessionCreator from './util/SessionCreator';
@@ -38,10 +40,13 @@ export default function App() {
     initSdk();
   }, []);
 
-  async function fetchSession() {
+  async function fetchSession(requireCustomerId: boolean = false) {
     setLoading(true);
     try {
-      const session = await SessionCreator.createOneOffSession(paymentService);
+      const session = await SessionCreator.createOneOffSession(
+        paymentService,
+        requireCustomerId
+      );
       console.log('Payment Session:', session);
       return session;
     } catch (error) {
@@ -88,7 +93,7 @@ export default function App() {
   };
 
   const handlePayWithCardDetails = async () => {
-    let session = await fetchSession();
+    let session = await fetchSession(true);
     if (session) {
       payWithCardDetails(
         session.clientSecret ?? '',
@@ -134,6 +139,16 @@ export default function App() {
       >
         <Text style={styles.buttonText}>payWithCardDetails</Text>
       </TouchableOpacity>
+      {Platform.OS === 'android' && (
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            handlePaymentFlowPress(startGooglePay);
+          }}
+        >
+          <Text style={styles.buttonText}>startGooglePay</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }

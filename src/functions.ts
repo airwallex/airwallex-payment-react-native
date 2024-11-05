@@ -29,6 +29,13 @@ export const presentCardPaymentFlow = async (
   return NativeAirwallexSdk.presentCardPaymentFlow(clientSecret, session);
 };
 
+export const startGooglePay = async (
+  clientSecret: string,
+  session: PaymentSession
+): Promise<PaymentResult> => {
+  return NativeAirwallexSdk.startGooglePay(clientSecret, session);
+};
+
 export const payWithCardDetails = async (
   clientSecret: string,
   session: PaymentSession,

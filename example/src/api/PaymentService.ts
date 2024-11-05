@@ -50,14 +50,14 @@ class PaymentService {
         {
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.apiKey}`,
           },
         }
       );
+
       console.log('HTTP Response Status Code:', response.status);
       console.log('HTTP Response Data:', response.data);
 
-      if (response.status === 200) {
+      if (response.status === 200 || response.status === 201) {
         return response.data;
       } else {
         throw new Error(`Failed to create customer: ${response.data}`);

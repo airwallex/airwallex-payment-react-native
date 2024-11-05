@@ -139,6 +139,39 @@ class AirwallexPaymentReactNativeModule(private val reactContext: ReactApplicati
   }
 
   @ReactMethod
+  fun startGooglePay(clientSecret: String, session: ReadableMap, promise: Promise) {
+    val currentActivity = reactContext.currentActivity
+    if (currentActivity == null || currentActivity !is ComponentActivity) {
+      promise.reject("payment_failure", "Current activity is not a ComponentActivity")
+      return
+    }
+    try {
+      runWithAirwallex(currentActivity) {
+        val paymentSession = AirwallexPaymentSessionConverter.fromReadableMap(session)
+        airwallex.startGooglePay(
+          paymentSession,
+          listener = object : Airwallex.PaymentResultListener {
+            override fun onCompleted(status: AirwallexPaymentStatus) {
+              when (status) {
+                is AirwallexPaymentStatus.Failure -> {
+                  promise.reject("payment_failure", status.exception.localizedMessage)
+                }
+
+                else -> {
+                  val resultData = mapAirwallexPaymentStatusToResult(status)
+                  promise.resolve(resultData)
+                }
+              }
+            }
+          }
+        )
+      }
+    } catch (e: Exception) {
+      promise.reject("payment_failure", e.message, e)
+    }
+  }
+
+  @ReactMethod
   fun payWithCardDetails(
     clientSecret: String,
     session: ReadableMap,
