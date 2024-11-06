@@ -24,7 +24,7 @@ class SessionCreator {
       if (requireCustomerId) {
         const customerInfo =
           await paymentService.createCustomer(getCustomerParams());
-        customerId = customerInfo.customer_id;
+        customerId = customerInfo.id;
       }
       const paymentIntent = await paymentService.createPaymentIntent(
         getPaymentParams(customerId)
@@ -46,12 +46,15 @@ class SessionCreator {
         amount,
         '\n',
         'currency:',
-        currency
+        currency,
+        '\n',
+        'customerId:',
+        customerId
       );
 
       const session: OneOffSession = {
         type: 'OneOff',
-        customerId: '',
+        customerId: customerId,
         shipping: this.createShipping(),
         paymentIntentId: paymentIntentId,
         currency: currency,
@@ -86,7 +89,7 @@ class SessionCreator {
     try {
       const customerInfo =
         await paymentService.createCustomer(getCustomerParams());
-      const customerId = customerInfo.customer_id;
+      const customerId = customerInfo.id;
       const clientSecretInfo =
         await paymentService.createClientSecretWithQuery(customerId);
       const clientSecret = clientSecretInfo.client_secret;
@@ -121,16 +124,12 @@ class SessionCreator {
   }
 
   static async createRecurringWithIntentSession(
-    paymentService: PaymentService,
-    requireCustomerId: boolean = false
+    paymentService: PaymentService
   ): Promise<PaymentSession> {
     try {
-      let customerId = null;
-      if (requireCustomerId) {
-        const customerInfo =
-          await paymentService.createCustomer(getCustomerParams());
-        customerId = customerInfo.customer_id;
-      }
+      const customerInfo =
+        await paymentService.createCustomer(getCustomerParams());
+      const customerId = customerInfo.id;
       const paymentIntent = await paymentService.createPaymentIntent(
         getPaymentParams(customerId)
       );
@@ -151,7 +150,10 @@ class SessionCreator {
         amount,
         '\n',
         'currency:',
-        currency
+        currency,
+        '\n',
+        'customerId:',
+        customerId
       );
 
       const session: RecurringWithIntentSession = {

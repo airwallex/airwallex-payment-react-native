@@ -21,26 +21,29 @@ import type { PaymentResult } from '../../src/types/PaymentResult';
 import { useEffect, useState } from 'react';
 import RNPickerSelect from 'react-native-picker-select';
 
+type Environment = 'staging' | 'demo';
+
 export default function App() {
   const [loading, setLoading] = useState(false);
   const [paymentMode, setPaymentMode] = useState('oneOff');
-  const environment = 'demo';
-  const apiUrl = 'https://demo-pacheckoutdemo.airwallex.com';
-  const paymentService = new PaymentService(apiUrl, '', '');
+  const [environment, setEnvironment] = useState<Environment>('demo');
+  const [paymentService, setPaymentService] = useState(
+    new PaymentService(environment, '', '')
+  );
 
   useEffect(() => {
-    const initSdk = async () => {
+    setPaymentService(new PaymentService(environment, '', ''));
+    const initializeSdk = async (env: Environment) => {
       try {
-        await initialize(environment, true, false);
+        await initialize(env, true, false);
         console.log('SDK initialized successfully');
       } catch (error) {
         console.error('Error initializing SDK:', error);
         Alert.alert('Error', 'Failed to initialize SDK.');
       }
     };
-
-    initSdk();
-  }, []);
+    initializeSdk(environment);
+  }, [environment]);
 
   async function fetchSession(requireCustomerId = false) {
     setLoading(true);
@@ -57,10 +60,10 @@ export default function App() {
           session = await SessionCreator.createRecurringSession(paymentService);
           break;
         case 'recurringAndPayment':
-          session = await SessionCreator.createRecurringWithIntentSession(
-            paymentService,
-            requireCustomerId
-          );
+          session =
+            await SessionCreator.createRecurringWithIntentSession(
+              paymentService
+            );
           break;
         default:
           throw new Error('Unknown payment mode');
@@ -112,13 +115,14 @@ export default function App() {
   };
 
   const handlePayWithCardDetails = async () => {
-    let session = await fetchSession(true);
+    const saveCard = true;
+    let session = await fetchSession(saveCard);
     if (session) {
       payWithCardDetails(
         session.clientSecret ?? '',
         session,
         CardCreator.createCard(environment),
-        false
+        saveCard
       )
         .then(handleResult)
         .catch((error) => Alert.alert('Payment failed', error.message));
@@ -129,6 +133,21 @@ export default function App() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.topBar}>
+        <RNPickerSelect
+          onValueChange={setEnvironment}
+          items={[
+            { label: 'Demo', value: 'demo' },
+            { label: 'Staging', value: 'staging' },
+          ]}
+          value={environment}
+          placeholder={{}}
+          style={{
+            inputIOS: styles.environmentPicker,
+            inputAndroid: styles.environmentPicker,
+          }}
+        />
+      </View>
       {loading && (
         <ActivityIndicator
           size="large"
@@ -144,6 +163,11 @@ export default function App() {
           { label: 'Recurring and Payment', value: 'recurringAndPayment' },
         ]}
         value={paymentMode}
+        placeholder={{
+          label: 'Payment Mode',
+          value: null,
+          color: '#007BFF',
+        }}
         style={{
           inputIOS: styles.picker,
           inputAndroid: styles.picker,
@@ -172,7 +196,7 @@ export default function App() {
       >
         <Text style={styles.buttonText}>payWithCardDetails</Text>
       </TouchableOpacity>
-      {Platform.OS === 'android' && (
+      {Platform.OS === 'android' && paymentMode === 'oneOff' && (
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
@@ -192,6 +216,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
+  },
+  topBar: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    margin: 10,
+    zIndex: 10,
+  },
+  environmentPicker: {
+    fontSize: 14,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 4,
+    backgroundColor: 'white',
+    color: 'black',
+    width: 150,
   },
   button: {
     marginVertical: 10,

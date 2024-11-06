@@ -5,10 +5,8 @@ import com.airwallex.android.core.BillingAddressParameters
 import com.airwallex.android.core.GooglePayOptions
 import com.airwallex.android.core.ShippingAddressParameters
 import com.airwallex.android.core.googlePaySupportedNetworks
-import com.airwallex.android.core.model.Address
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PurchaseOrder
-import com.airwallex.android.core.model.Shipping
 import com.facebook.react.bridge.ReadableMap
 import java.math.BigDecimal
 
@@ -17,7 +15,7 @@ object AirwallexPaymentSessionConverter {
   fun fromReadableMap(sessionMap: ReadableMap): AirwallexPaymentSession {
     val googlePayOptions = sessionMap.getMapSafe("googlePayOptions")?.toGooglePayOptions()
     val customerId = sessionMap.getStringSafe("customerId")
-    val clientSecret = sessionMap.getStringSafe("clientSecret")
+    val clientSecret = sessionMap.getStringSafe("clientSecret") ?: error("clientSecret is required")
     val returnUrl = sessionMap.getStringSafe("returnUrl")
     val paymentMethods =
       sessionMap.getArraySafe("paymentMethods")?.toArrayList()?.map { it.toString() }
@@ -27,7 +25,12 @@ object AirwallexPaymentSessionConverter {
     val isEmailRequired = sessionMap.getBooleanSafe("isEmailRequired", false)
 
     val shipping = sessionMap.getMapSafe("shipping")?.toShipping()
-    val amount = sessionMap.getDoubleSafe("amount", 0.0)
+
+    val amount = sessionMap.getDoubleSafe("amount", -1.0).let {
+      if (it == -1.0) error("amount is required")
+      BigDecimal.valueOf(it)
+    }
+
     val currency = sessionMap.getStringSafe("currency") ?: error("Currency is required")
     val countryCode = sessionMap.getStringSafe("countryCode") ?: error("Country code is required")
     val paymentIntentId =
@@ -107,47 +110,5 @@ object AirwallexPaymentSessionConverter {
         ?.map { it.toString() },
       phoneNumberRequired = getBooleanSafe("phoneNumberRequired")
     )
-  }
-
-  private fun ReadableMap.toShipping(): Shipping? {
-    val firstName = getStringSafe("firstName")
-    val lastName = getStringSafe("lastName")
-    val phone = getStringSafe("phoneNumber")
-    val email = getStringSafe("email")
-    val shippingMethod = getStringSafe("shippingMethod")
-    val address = getMapSafe("address")?.toAddress()
-
-    return if (firstName == null && lastName == null && phone == null && email == null && shippingMethod == null && address == null) {
-      null
-    } else {
-      Shipping.Builder().apply {
-        setFirstName(firstName)
-        setLastName(lastName)
-        setPhone(phone)
-        setEmail(email)
-        setShippingMethod(shippingMethod)
-        setAddress(address)
-      }.build()
-    }
-  }
-
-  private fun ReadableMap.toAddress(): Address? {
-    val countryCode = getStringSafe("countryCode")
-    val state = getStringSafe("state")
-    val city = getStringSafe("city")
-    val street = getStringSafe("street")
-    val postcode = getStringSafe("postcode")
-
-    return if (countryCode == null && state == null && city == null && street == null && postcode == null) {
-      null
-    } else {
-      Address.Builder().apply {
-        setCountryCode(countryCode)
-        setState(state)
-        setCity(city)
-        setStreet(street)
-        setPostcode(postcode)
-      }.build()
-    }
   }
 }

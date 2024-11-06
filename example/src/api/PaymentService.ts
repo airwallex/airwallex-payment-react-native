@@ -2,6 +2,8 @@ import axios from 'axios';
 
 interface PaymentIntentParams {
   [key: string]: any;
+  apiKey: string;
+  clientId: string;
 }
 
 class PaymentService {
@@ -9,18 +11,20 @@ class PaymentService {
   private apiKey: string;
   private clientId: string;
 
-  constructor(baseUrl: string, apiKey: string, clientId: string) {
-    this.baseUrl = baseUrl;
+  constructor(
+    environment: 'staging' | 'demo' | 'production' = 'demo',
+    apiKey: string,
+    clientId: string
+  ) {
+    this.baseUrl = this.getBaseUrlForEnvironment(environment);
     this.apiKey = apiKey;
     this.clientId = clientId;
-    console.log(
-      'PaymentService:',
-      'apiKey:' + this.apiKey + ',clientId:' + this.clientId
-    );
   }
 
   async createPaymentIntent(params: PaymentIntentParams): Promise<any> {
     console.log('Creating payment intent with params:', params);
+    params.apiKey = this.apiKey;
+    params.clientId = this.clientId;
     try {
       const response = await axios.post(
         `${this.baseUrl}/api/v1/pa/payment_intents/create`,
@@ -47,6 +51,8 @@ class PaymentService {
 
   async createCustomer(params: PaymentIntentParams): Promise<any> {
     console.log('Creating customer with params:', params);
+    params.apiKey = this.apiKey;
+    params.clientId = this.clientId;
     try {
       const response = await axios.post(
         `${this.baseUrl}/api/v1/pa/customers/create`,
@@ -90,6 +96,19 @@ class PaymentService {
     } catch (e) {
       console.error('Error occurred while generating client secret:', e);
       throw e;
+    }
+  }
+
+  getBaseUrlForEnvironment(
+    environment: 'staging' | 'demo' | 'production'
+  ): string {
+    switch (environment) {
+      case 'demo':
+        return 'https://demo-pacheckoutdemo.airwallex.com';
+      case 'staging':
+        return 'https://staging-pacheckoutdemo.airwallex.com';
+      default:
+        return '';
     }
   }
 }

@@ -7,14 +7,19 @@ import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.card.CardComponent
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexConfiguration
+import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.Environment
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.googlepay.GooglePayComponent
 import com.airwallex.android.redirect.RedirectComponent
 import com.airwallex.android.wechat.WeChatComponent
 import com.airwallexpaymentreactnative.util.AirwallexPaymentSessionConverter
+import com.airwallexpaymentreactnative.util.AirwallexRecurringSessionConverter
+import com.airwallexpaymentreactnative.util.AirwallexRecurringWithIntentSessionConverter
 import com.airwallexpaymentreactnative.util.PaymentCardConverter
+import com.airwallexpaymentreactnative.util.getStringSafe
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
@@ -76,13 +81,9 @@ class AirwallexPaymentReactNativeModule(private val reactContext: ReactApplicati
 
   @ReactMethod
   fun presentPaymentFlow(clientSecret: String, session: ReadableMap, promise: Promise) {
-    val currentActivity = reactContext.currentActivity
-    if (currentActivity == null || currentActivity !is ComponentActivity) {
-      promise.reject("payment_failure", "Current activity is not a ComponentActivity")
-      return
-    }
+    val currentActivity = requireComponentActivity(promise) ?: return
     try {
-      val paymentSession = AirwallexPaymentSessionConverter.fromReadableMap(session)
+      val paymentSession = parseSessionFromMap(session)
       AirwallexStarter.presentEntirePaymentFlow(
         currentActivity,
         paymentSession,
@@ -108,13 +109,9 @@ class AirwallexPaymentReactNativeModule(private val reactContext: ReactApplicati
 
   @ReactMethod
   fun presentCardPaymentFlow(clientSecret: String, session: ReadableMap, promise: Promise) {
-    val currentActivity = reactContext.currentActivity
-    if (currentActivity == null || currentActivity !is ComponentActivity) {
-      promise.reject("payment_failure", "Current activity is not a ComponentActivity")
-      return
-    }
+    val currentActivity = requireComponentActivity(promise) ?: return
     try {
-      val paymentSession = AirwallexPaymentSessionConverter.fromReadableMap(session)
+      val paymentSession = parseSessionFromMap(session)
       AirwallexStarter.presentCardPaymentFlow(
         currentActivity,
         paymentSession,
@@ -140,16 +137,12 @@ class AirwallexPaymentReactNativeModule(private val reactContext: ReactApplicati
 
   @ReactMethod
   fun startGooglePay(clientSecret: String, session: ReadableMap, promise: Promise) {
-    val currentActivity = reactContext.currentActivity
-    if (currentActivity == null || currentActivity !is ComponentActivity) {
-      promise.reject("payment_failure", "Current activity is not a ComponentActivity")
-      return
-    }
+    val currentActivity = requireComponentActivity(promise) ?: return
     try {
       runWithAirwallex(currentActivity) {
-        val paymentSession = AirwallexPaymentSessionConverter.fromReadableMap(session)
+        val paymentSession = parseSessionFromMap(session)
         airwallex.startGooglePay(
-          paymentSession,
+          paymentSession as AirwallexPaymentSession,
           listener = object : Airwallex.PaymentResultListener {
             override fun onCompleted(status: AirwallexPaymentStatus) {
               when (status) {
@@ -179,14 +172,10 @@ class AirwallexPaymentReactNativeModule(private val reactContext: ReactApplicati
     saveCard: Boolean,
     promise: Promise
   ) {
-    val currentActivity = reactContext.currentActivity
-    if (currentActivity == null || currentActivity !is ComponentActivity) {
-      promise.reject("payment_failure", "Current activity is not a ComponentActivity")
-      return
-    }
+    val currentActivity = requireComponentActivity(promise) ?: return
     try {
       runWithAirwallex(currentActivity) {
-        val paymentSession = AirwallexPaymentSessionConverter.fromReadableMap(session)
+        val paymentSession = parseSessionFromMap(session)
         val paymentCard = PaymentCardConverter.fromReadableMap(card)
         airwallex.confirmPaymentIntent(
           session = paymentSession,
@@ -214,6 +203,14 @@ class AirwallexPaymentReactNativeModule(private val reactContext: ReactApplicati
     }
   }
 
+  private fun requireComponentActivity(promise: Promise): ComponentActivity? {
+    val currentActivity = reactContext.currentActivity
+    if (currentActivity == null || currentActivity !is ComponentActivity) {
+      promise.reject("activity_error", "Current activity is not a ComponentActivity")
+      return null
+    }
+    return currentActivity
+  }
 
   private fun mapAirwallexPaymentStatusToResult(status: AirwallexPaymentStatus): WritableMap {
     val map = Arguments.createMap()
@@ -256,5 +253,26 @@ class AirwallexPaymentReactNativeModule(private val reactContext: ReactApplicati
       airwallex = Airwallex(activity)
     }
     block()
+  }
+
+  private fun parseSessionFromMap(sessionMap: ReadableMap): AirwallexSession {
+    val type = sessionMap.getStringSafe("type") ?: error("type is required")
+    return when (type) {
+      "OneOff" -> {
+        AirwallexPaymentSessionConverter.fromReadableMap(sessionMap)
+      }
+
+      "Recurring" -> {
+        AirwallexRecurringSessionConverter.fromReadableMap(sessionMap)
+      }
+
+      "RecurringWithIntent" -> {
+        AirwallexRecurringWithIntentSessionConverter.fromReadableMap(sessionMap)
+      }
+
+      else -> {
+        error("Unsupported session type: $type")
+      }
+    }
   }
 }
