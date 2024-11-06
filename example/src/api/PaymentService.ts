@@ -13,6 +13,10 @@ class PaymentService {
     this.baseUrl = baseUrl;
     this.apiKey = apiKey;
     this.clientId = clientId;
+    console.log(
+      'PaymentService:',
+      'apiKey:' + this.apiKey + ',clientId:' + this.clientId
+    );
   }
 
   async createPaymentIntent(params: PaymentIntentParams): Promise<any> {
@@ -72,16 +76,7 @@ class PaymentService {
     console.log('Generating client secret for customer:', customerId);
     try {
       const response = await axios.get(
-        `${this.baseUrl}/api/v1/pa/customers/${customerId}/generate_client_secret`,
-        {
-          params: {
-            apiKey: this.apiKey,
-            clientId: this.clientId,
-          },
-          headers: {
-            Authorization: `Bearer ${this.apiKey}`,
-          },
-        }
+        `${this.baseUrl}/api/v1/pa/customers/${customerId}/generate_client_secret`
       );
 
       console.log('HTTP Response Status Code:', response.status);

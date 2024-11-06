@@ -19,9 +19,11 @@ import SessionCreator from './util/SessionCreator';
 import CardCreator from './util/CardCreator';
 import type { PaymentResult } from '../../src/types/PaymentResult';
 import { useEffect, useState } from 'react';
+import RNPickerSelect from 'react-native-picker-select';
 
 export default function App() {
   const [loading, setLoading] = useState(false);
+  const [paymentMode, setPaymentMode] = useState('oneOff');
   const environment = 'demo';
   const apiUrl = 'https://demo-pacheckoutdemo.airwallex.com';
   const paymentService = new PaymentService(apiUrl, '', '');
@@ -40,13 +42,30 @@ export default function App() {
     initSdk();
   }, []);
 
-  async function fetchSession(requireCustomerId: boolean = false) {
+  async function fetchSession(requireCustomerId = false) {
     setLoading(true);
     try {
-      const session = await SessionCreator.createOneOffSession(
-        paymentService,
-        requireCustomerId
-      );
+      let session;
+      switch (paymentMode) {
+        case 'oneOff':
+          session = await SessionCreator.createOneOffSession(
+            paymentService,
+            requireCustomerId
+          );
+          break;
+        case 'recurring':
+          session = await SessionCreator.createRecurringSession(paymentService);
+          break;
+        case 'recurringAndPayment':
+          session = await SessionCreator.createRecurringWithIntentSession(
+            paymentService,
+            requireCustomerId
+          );
+          break;
+        default:
+          throw new Error('Unknown payment mode');
+      }
+
       console.log('Payment Session:', session);
       return session;
     } catch (error) {
@@ -117,6 +136,20 @@ export default function App() {
           style={styles.loading}
         />
       )}
+      <RNPickerSelect
+        onValueChange={(value) => setPaymentMode(value)}
+        items={[
+          { label: 'One Off', value: 'oneOff' },
+          { label: 'Recurring', value: 'recurring' },
+          { label: 'Recurring and Payment', value: 'recurringAndPayment' },
+        ]}
+        value={paymentMode}
+        style={{
+          inputIOS: styles.picker,
+          inputAndroid: styles.picker,
+        }}
+      />
+
       <TouchableOpacity
         style={styles.button}
         onPress={() => {
@@ -177,5 +210,17 @@ const styles = StyleSheet.create({
     top: '50%',
     left: '50%',
     transform: [{ translateX: -25 }, { translateY: -25 }],
+  },
+  picker: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 4,
+    color: 'black',
+    width: '80%',
+    alignSelf: 'center',
+    marginBottom: 20,
   },
 });
