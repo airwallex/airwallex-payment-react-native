@@ -14,4 +14,5 @@ export interface Card {
   avsCheck?: string;
   issuerCountryCode?: string;
   cardType?: string;
+  numberType?: string;
 }

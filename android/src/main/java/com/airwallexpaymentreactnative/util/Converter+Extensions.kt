@@ -1,35 +1,38 @@
 package com.airwallexpaymentreactnative.util
 
 import com.airwallex.android.core.model.Address
+import com.airwallex.android.core.model.Billing
+import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.Shipping
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 
-fun ReadableMap.getStringSafe(key: String): String? =
+fun ReadableMap.getStringOrNull(key: String): String? =
   if (hasKey(key)) getString(key) else null
 
-fun ReadableMap.getBooleanSafe(key: String, defaultValue: Boolean = false): Boolean =
+fun ReadableMap.getBooleanOrDefault(key: String, defaultValue: Boolean = false): Boolean =
   if (hasKey(key)) getBoolean(key) else defaultValue
 
-fun ReadableMap.getBooleanOrNullSafe(key: String): Boolean? =
+fun ReadableMap.getBooleanOrNull(key: String): Boolean? =
   if (hasKey(key)) getBoolean(key) else null
 
-fun ReadableMap.getDoubleSafe(key: String, defaultValue: Double = 0.0): Double =
+fun ReadableMap.getDoubleOrDefault(key: String, defaultValue: Double = 0.0): Double =
   if (hasKey(key)) getDouble(key) else defaultValue
 
-fun ReadableMap.getArraySafe(key: String): ReadableArray? =
+fun ReadableMap.getArrayOrNull(key: String): ReadableArray? =
   if (hasKey(key)) getArray(key) else null
 
-fun ReadableMap.getMapSafe(key: String): ReadableMap? =
+fun ReadableMap.getMapOrNull(key: String): ReadableMap? =
   if (hasKey(key)) getMap(key) else null
 
 fun ReadableMap.toShipping(): Shipping? {
-  val firstName = getStringSafe("firstName")
-  val lastName = getStringSafe("lastName")
-  val phone = getStringSafe("phoneNumber")
-  val email = getStringSafe("email")
-  val shippingMethod = getStringSafe("shippingMethod")
-  val address = getMapSafe("address")?.toAddress()
+  val firstName = getStringOrNull("firstName")
+  val lastName = getStringOrNull("lastName")
+  val phone = getStringOrNull("phoneNumber")
+  val email = getStringOrNull("email")
+  val shippingMethod = getStringOrNull("shippingMethod")
+  val address = getMapOrNull("address")?.toAddress()
 
   return if (firstName == null && lastName == null && phone == null && email == null && shippingMethod == null && address == null) {
     null
@@ -45,12 +48,34 @@ fun ReadableMap.toShipping(): Shipping? {
   }
 }
 
+fun ReadableMap.toBilling(): Billing? {
+  val firstName = getStringOrNull("firstName")
+  val lastName = getStringOrNull("lastName")
+  val phone = getStringOrNull("phoneNumber")
+  val email = getStringOrNull("email")
+  val dateOfBirth = getStringOrNull("dateOfBirth")
+  val address = getMapOrNull("address")?.toAddress()
+
+  return if (firstName == null && lastName == null && phone == null && email == null && dateOfBirth == null && address == null) {
+    null
+  } else {
+    Billing.Builder().apply {
+      setFirstName(firstName)
+      setLastName(lastName)
+      setPhone(phone)
+      setEmail(email)
+      setDateOfBirth(dateOfBirth)
+      setAddress(address)
+    }.build()
+  }
+}
+
 fun ReadableMap.toAddress(): Address? {
-  val countryCode = getStringSafe("countryCode")
-  val state = getStringSafe("state")
-  val city = getStringSafe("city")
-  val street = getStringSafe("street")
-  val postcode = getStringSafe("postcode")
+  val countryCode = getStringOrNull("countryCode")
+  val state = getStringOrNull("state")
+  val city = getStringOrNull("city")
+  val street = getStringOrNull("street")
+  val postcode = getStringOrNull("postcode")
 
   return if (countryCode == null && state == null && city == null && street == null && postcode == null) {
     null
@@ -65,3 +90,40 @@ fun ReadableMap.toAddress(): Address? {
   }
 }
 
+fun ReadableMap.toNextTriggeredBy(): PaymentConsent.NextTriggeredBy? {
+  val nextTriggeredBy = getStringOrNull("nextTriggeredBy") ?: ""
+  return when (nextTriggeredBy.lowercase()) {
+    "merchant" -> PaymentConsent.NextTriggeredBy.MERCHANT
+    "customer" -> PaymentConsent.NextTriggeredBy.CUSTOMER
+    else -> null
+  }
+}
+
+fun ReadableMap.toMerchantTriggerReason(): PaymentConsent.MerchantTriggerReason? {
+  val merchantTriggerReason = getStringOrNull("merchantTriggerReason") ?: ""
+  return when (merchantTriggerReason.lowercase()) {
+    "scheduled" -> PaymentConsent.MerchantTriggerReason.SCHEDULED
+    "unscheduled" -> PaymentConsent.MerchantTriggerReason.UNSCHEDULED
+    else -> null
+  }
+}
+
+fun ReadableMap.toPaymentConsentStatus(): PaymentConsent.PaymentConsentStatus? {
+  val statusString = getStringOrNull("status") ?: ""
+  return when (statusString.uppercase()) {
+    "PENDING_VERIFICATION" -> PaymentConsent.PaymentConsentStatus.PENDING_VERIFICATION
+    "VERIFIED" -> PaymentConsent.PaymentConsentStatus.VERIFIED
+    "DISABLED" -> PaymentConsent.PaymentConsentStatus.DISABLED
+    else -> null
+  }
+}
+
+fun ReadableMap.toNumberType(): PaymentMethod.Card.NumberType? {
+  val numberTypeString = getStringOrNull("numberType") ?: ""
+  return when (numberTypeString.lowercase()) {
+    "pan" -> PaymentMethod.Card.NumberType.PAN
+    "external_network_token" -> PaymentMethod.Card.NumberType.EXTERNAL_NETWORK_TOKEN
+    "airwallex_network_token" -> PaymentMethod.Card.NumberType.AIRWALLEX_NETWORK_TOKEN
+    else -> null
+  }
+}

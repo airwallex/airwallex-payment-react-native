@@ -10,9 +10,11 @@ import {
 import {
   initialize,
   payWithCardDetails,
+  payWithPaymentConsent,
   presentCardPaymentFlow,
   presentPaymentFlow,
   startGooglePay,
+  type PaymentSession,
 } from 'airwallex-payment-react-native';
 import PaymentService from './api/PaymentService';
 import SessionCreator from './util/SessionCreator';
@@ -20,6 +22,7 @@ import CardCreator from './util/CardCreator';
 import type { PaymentResult } from '../../src/types/PaymentResult';
 import { useEffect, useState } from 'react';
 import RNPickerSelect from 'react-native-picker-select';
+import PaymentConsentCreator from './util/PaymentConsentCreator';
 
 type Environment = 'staging' | 'demo';
 
@@ -106,7 +109,7 @@ export default function App() {
   ) => {
     let session = await fetchSession();
     if (session) {
-      fun(session.clientSecret ?? '', session)
+      fun(session)
         .then(handleResult)
         .catch((error) => Alert.alert('Payment failed', error.message));
     } else {
@@ -116,18 +119,59 @@ export default function App() {
 
   const handlePayWithCardDetails = async () => {
     const saveCard = true;
-    let session = await fetchSession(saveCard);
-    if (session) {
-      payWithCardDetails(
-        session.clientSecret ?? '',
-        session,
-        CardCreator.createCard(environment),
-        saveCard
-      )
-        .then(handleResult)
-        .catch((error) => Alert.alert('Payment failed', error.message));
-    } else {
-      Alert.alert('Error', 'Session could not be created.');
+    await nativePayWithCardDetails(saveCard, environment, async (_, result) => {
+      handleResult(result);
+    });
+  };
+
+  const handlePayWithSavedCard = async () => {
+    const saveCard = true;
+    await nativePayWithCardDetails(
+      saveCard,
+      environment,
+      async (session, _) => {
+        const paymentConsent = await PaymentConsentCreator.getPaymentConsents(
+          paymentService,
+          session.customerId ?? ''
+        );
+        setLoading(true);
+        const newSession = await fetchSession();
+        if (newSession && paymentConsent) {
+          await payWithPaymentConsent(newSession, paymentConsent)
+            .then(handleResult)
+            .catch((error) => Alert.alert('Payment failed', error.message));
+        } else {
+          Alert.alert(
+            'Error',
+            'paymentConsent or session could not be created.'
+          );
+        }
+      }
+    );
+  };
+
+  const nativePayWithCardDetails = async (
+    saveCard: boolean,
+    environment: string,
+    handleResult: (
+      session: PaymentSession,
+      result: PaymentResult
+    ) => Promise<void>
+  ) => {
+    try {
+      const session = await fetchSession(saveCard);
+      if (session) {
+        const result: PaymentResult = await payWithCardDetails(
+          session,
+          CardCreator.createCard(environment),
+          saveCard
+        );
+        await handleResult(session, result);
+      } else {
+        Alert.alert('Error', 'Session could not be created.');
+      }
+    } catch (error) {
+      Alert.alert('Payment failed', (error as Error).message);
     }
   };
 
@@ -196,6 +240,14 @@ export default function App() {
       >
         <Text style={styles.buttonText}>payWithCardDetails</Text>
       </TouchableOpacity>
+      {paymentMode === 'oneOff' && (
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handlePayWithSavedCard}
+        >
+          <Text style={styles.buttonText}>payWithSavedCard</Text>
+        </TouchableOpacity>
+      )}
       {Platform.OS === 'android' && paymentMode === 'oneOff' && (
         <TouchableOpacity
           style={styles.button}

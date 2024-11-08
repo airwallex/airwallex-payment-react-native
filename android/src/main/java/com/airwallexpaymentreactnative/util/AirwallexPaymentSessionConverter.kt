@@ -13,28 +13,28 @@ import java.math.BigDecimal
 object AirwallexPaymentSessionConverter {
 
   fun fromReadableMap(sessionMap: ReadableMap): AirwallexPaymentSession {
-    val googlePayOptions = sessionMap.getMapSafe("googlePayOptions")?.toGooglePayOptions()
-    val customerId = sessionMap.getStringSafe("customerId")
-    val clientSecret = sessionMap.getStringSafe("clientSecret") ?: error("clientSecret is required")
-    val returnUrl = sessionMap.getStringSafe("returnUrl")
+    val googlePayOptions = sessionMap.getMapOrNull("googlePayOptions")?.toGooglePayOptions()
+    val customerId = sessionMap.getStringOrNull("customerId")
+    val clientSecret = sessionMap.getStringOrNull("clientSecret") ?: error("clientSecret is required")
+    val returnUrl = sessionMap.getStringOrNull("returnUrl")
     val paymentMethods =
-      sessionMap.getArraySafe("paymentMethods")?.toArrayList()?.map { it.toString() }
-    val autoCapture = sessionMap.getBooleanSafe("autoCapture", true)
-    val hidePaymentConsents = sessionMap.getBooleanSafe("hidePaymentConsents", false)
-    val isBillingRequired = sessionMap.getBooleanSafe("isBillingRequired", true)
-    val isEmailRequired = sessionMap.getBooleanSafe("isEmailRequired", false)
+      sessionMap.getArrayOrNull("paymentMethods")?.toArrayList()?.map { it.toString() }
+    val autoCapture = sessionMap.getBooleanOrDefault("autoCapture", true)
+    val hidePaymentConsents = sessionMap.getBooleanOrDefault("hidePaymentConsents", false)
+    val isBillingRequired = sessionMap.getBooleanOrDefault("isBillingRequired", true)
+    val isEmailRequired = sessionMap.getBooleanOrDefault("isEmailRequired", false)
 
-    val shipping = sessionMap.getMapSafe("shipping")?.toShipping()
+    val shipping = sessionMap.getMapOrNull("shipping")?.toShipping()
 
-    val amount = sessionMap.getDoubleSafe("amount", -1.0).let {
+    val amount = sessionMap.getDoubleOrDefault("amount", -1.0).let {
       if (it == -1.0) error("amount is required")
       BigDecimal.valueOf(it)
     }
 
-    val currency = sessionMap.getStringSafe("currency") ?: error("Currency is required")
-    val countryCode = sessionMap.getStringSafe("countryCode") ?: error("Country code is required")
+    val currency = sessionMap.getStringOrNull("currency") ?: error("Currency is required")
+    val countryCode = sessionMap.getStringOrNull("countryCode") ?: error("Country code is required")
     val paymentIntentId =
-      sessionMap.getStringSafe("paymentIntentId") ?: error("PaymentIntentId is required")
+      sessionMap.getStringOrNull("paymentIntentId") ?: error("PaymentIntentId is required")
 
     val order = shipping?.let {
       PurchaseOrder(shipping = it)
@@ -63,36 +63,36 @@ object AirwallexPaymentSessionConverter {
   }
 
   private fun ReadableMap.toGooglePayOptions(): GooglePayOptions {
-    val billingAddressParametersMap = getMapSafe("billingAddressParameters")
-    val shippingAddressParametersMap = getMapSafe("shippingAddressParameters")
+    val billingAddressParametersMap = getMapOrNull("billingAddressParameters")
+    val shippingAddressParametersMap = getMapOrNull("shippingAddressParameters")
 
     val billingAddressParameters = billingAddressParametersMap?.toBillingAddressParameters()
     val shippingAddressParameters = shippingAddressParametersMap?.toShippingAddressParameters()
 
     return GooglePayOptions(
-      allowedCardAuthMethods = getArraySafe("allowedCardAuthMethods")?.toArrayList()
+      allowedCardAuthMethods = getArrayOrNull("allowedCardAuthMethods")?.toArrayList()
         ?.map { it.toString() },
-      merchantName = getStringSafe("merchantName"),
-      allowPrepaidCards = getBooleanOrNullSafe("allowPrepaidCards"),
-      allowCreditCards = getBooleanOrNullSafe("allowCreditCards"),
-      assuranceDetailsRequired = getBooleanOrNullSafe("assuranceDetailsRequired"),
-      billingAddressRequired = getBooleanOrNullSafe("billingAddressRequired"),
+      merchantName = getStringOrNull("merchantName"),
+      allowPrepaidCards = getBooleanOrNull("allowPrepaidCards"),
+      allowCreditCards = getBooleanOrNull("allowCreditCards"),
+      assuranceDetailsRequired = getBooleanOrNull("assuranceDetailsRequired"),
+      billingAddressRequired = getBooleanOrNull("billingAddressRequired"),
       billingAddressParameters = billingAddressParameters,
-      transactionId = getStringSafe("transactionId"),
-      totalPriceLabel = getStringSafe("totalPriceLabel"),
-      checkoutOption = getStringSafe("checkoutOption"),
-      emailRequired = getBooleanOrNullSafe("emailRequired"),
-      shippingAddressRequired = getBooleanOrNullSafe("shippingAddressRequired"),
+      transactionId = getStringOrNull("transactionId"),
+      totalPriceLabel = getStringOrNull("totalPriceLabel"),
+      checkoutOption = getStringOrNull("checkoutOption"),
+      emailRequired = getBooleanOrNull("emailRequired"),
+      shippingAddressRequired = getBooleanOrNull("shippingAddressRequired"),
       shippingAddressParameters = shippingAddressParameters,
-      allowedCardNetworks = getArraySafe("allowedCardNetworks")?.toArrayList()
+      allowedCardNetworks = getArrayOrNull("allowedCardNetworks")?.toArrayList()
         ?.map { it.toString() }
         ?: googlePaySupportedNetworks(),
-      skipReadinessCheck = getBooleanSafe("skipReadinessCheck")
+      skipReadinessCheck = getBooleanOrDefault("skipReadinessCheck")
     )
   }
 
   private fun ReadableMap.toBillingAddressParameters(): BillingAddressParameters {
-    val formatStr = getStringSafe("format")
+    val formatStr = getStringOrNull("format")
     val format = when (formatStr?.lowercase()) {
       "min" -> BillingAddressParameters.Format.MIN
       "full" -> BillingAddressParameters.Format.FULL
@@ -100,15 +100,15 @@ object AirwallexPaymentSessionConverter {
     }
     return BillingAddressParameters(
       format = format,
-      phoneNumberRequired = getBooleanSafe("phoneNumberRequired")
+      phoneNumberRequired = getBooleanOrDefault("phoneNumberRequired")
     )
   }
 
   private fun ReadableMap.toShippingAddressParameters(): ShippingAddressParameters {
     return ShippingAddressParameters(
-      allowedCountryCodes = getArraySafe("allowedCountryCodes")?.toArrayList()
+      allowedCountryCodes = getArrayOrNull("allowedCountryCodes")?.toArrayList()
         ?.map { it.toString() },
-      phoneNumberRequired = getBooleanSafe("phoneNumberRequired")
+      phoneNumberRequired = getBooleanOrDefault("phoneNumberRequired")
     )
   }
 }

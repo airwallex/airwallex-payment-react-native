@@ -99,6 +99,27 @@ class PaymentService {
     }
   }
 
+  async getPaymentConsents(customerId: string): Promise<any> {
+    console.log('get Payment Consents:', customerId);
+    try {
+      const response = await axios.get(
+        `${this.baseUrl}/api/v1/pa/payment_consents?customer_id=${customerId}`
+      );
+
+      console.log('HTTP Response Status Code:', response.status);
+      console.log('HTTP Response Data:', response.data);
+
+      if (response.status === 200) {
+        return response.data;
+      } else {
+        throw new Error(`Failed to get payment consents: ${response.data}`);
+      }
+    } catch (e) {
+      console.error('Error occurred while getting payment consents:', e);
+      throw e;
+    }
+  }
+
   getBaseUrlForEnvironment(
     environment: 'staging' | 'demo' | 'production'
   ): string {

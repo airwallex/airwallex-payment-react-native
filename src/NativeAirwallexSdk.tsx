@@ -1,5 +1,5 @@
 import { NativeModules } from 'react-native';
-import type { PaymentSession } from './types';
+import type { PaymentConsent, PaymentSession } from './types';
 import type { PaymentResult } from './types/PaymentResult';
 import type { Card } from './types/Card';
 
@@ -10,26 +10,21 @@ type NativeAirwallexSdkType = {
     saveLogToLocal: boolean
   ): Promise<void>;
 
-  presentPaymentFlow(
-    clientSecret: string,
-    session: PaymentSession
-  ): Promise<PaymentResult>;
+  presentPaymentFlow(session: PaymentSession): Promise<PaymentResult>;
 
-  presentCardPaymentFlow(
-    clientSecret: string,
-    session: PaymentSession
-  ): Promise<PaymentResult>;
+  presentCardPaymentFlow(session: PaymentSession): Promise<PaymentResult>;
 
-  startGooglePay(
-    clientSecret: string,
-    session: PaymentSession
-  ): Promise<PaymentResult>;
+  startGooglePay(session: PaymentSession): Promise<PaymentResult>;
 
   payWithCardDetails(
-    clientSecret: string,
     session: PaymentSession,
     card: Card,
     saveCard: boolean
+  ): Promise<PaymentResult>;
+
+  payWithPaymentConsent(
+    session: PaymentSession,
+    paymentConsent: PaymentConsent
   ): Promise<PaymentResult>;
 };
 

@@ -19,7 +19,8 @@ import com.airwallexpaymentreactnative.util.AirwallexPaymentSessionConverter
 import com.airwallexpaymentreactnative.util.AirwallexRecurringSessionConverter
 import com.airwallexpaymentreactnative.util.AirwallexRecurringWithIntentSessionConverter
 import com.airwallexpaymentreactnative.util.PaymentCardConverter
-import com.airwallexpaymentreactnative.util.getStringSafe
+import com.airwallexpaymentreactnative.util.PaymentConsentConverter
+import com.airwallexpaymentreactnative.util.getStringOrNull
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
@@ -80,7 +81,7 @@ class AirwallexPaymentReactNativeModule(private val reactContext: ReactApplicati
   }
 
   @ReactMethod
-  fun presentPaymentFlow(clientSecret: String, session: ReadableMap, promise: Promise) {
+  fun presentPaymentFlow(session: ReadableMap, promise: Promise) {
     val currentActivity = requireComponentActivity(promise) ?: return
     try {
       val paymentSession = parseSessionFromMap(session)
@@ -108,7 +109,7 @@ class AirwallexPaymentReactNativeModule(private val reactContext: ReactApplicati
   }
 
   @ReactMethod
-  fun presentCardPaymentFlow(clientSecret: String, session: ReadableMap, promise: Promise) {
+  fun presentCardPaymentFlow(session: ReadableMap, promise: Promise) {
     val currentActivity = requireComponentActivity(promise) ?: return
     try {
       val paymentSession = parseSessionFromMap(session)
@@ -136,7 +137,7 @@ class AirwallexPaymentReactNativeModule(private val reactContext: ReactApplicati
   }
 
   @ReactMethod
-  fun startGooglePay(clientSecret: String, session: ReadableMap, promise: Promise) {
+  fun startGooglePay(session: ReadableMap, promise: Promise) {
     val currentActivity = requireComponentActivity(promise) ?: return
     try {
       runWithAirwallex(currentActivity) {
@@ -166,7 +167,6 @@ class AirwallexPaymentReactNativeModule(private val reactContext: ReactApplicati
 
   @ReactMethod
   fun payWithCardDetails(
-    clientSecret: String,
     session: ReadableMap,
     card: ReadableMap,
     saveCard: Boolean,
@@ -182,6 +182,41 @@ class AirwallexPaymentReactNativeModule(private val reactContext: ReactApplicati
           card = paymentCard,
           billing = null,
           saveCard = saveCard,
+          listener = object : Airwallex.PaymentResultListener {
+            override fun onCompleted(status: AirwallexPaymentStatus) {
+              when (status) {
+                is AirwallexPaymentStatus.Failure -> {
+                  promise.reject("payment_failure", status.exception.localizedMessage)
+                }
+
+                else -> {
+                  val resultData = mapAirwallexPaymentStatusToResult(status)
+                  promise.resolve(resultData)
+                }
+              }
+            }
+          }
+        )
+      }
+    } catch (e: Exception) {
+      promise.reject("payment_failure", e.message, e)
+    }
+  }
+
+  @ReactMethod
+  fun payWithPaymentConsent(
+    session: ReadableMap,
+    paymentConsentMap: ReadableMap,
+    promise: Promise
+  ) {
+    val currentActivity = requireComponentActivity(promise) ?: return
+    try {
+      runWithAirwallex(currentActivity) {
+        val paymentSession = parseSessionFromMap(session)
+        val paymentConsent = PaymentConsentConverter.fromReadableMap(paymentConsentMap)
+        airwallex.confirmPaymentIntent(
+          session = paymentSession as AirwallexPaymentSession,
+          paymentConsent = paymentConsent,
           listener = object : Airwallex.PaymentResultListener {
             override fun onCompleted(status: AirwallexPaymentStatus) {
               when (status) {
@@ -256,7 +291,7 @@ class AirwallexPaymentReactNativeModule(private val reactContext: ReactApplicati
   }
 
   private fun parseSessionFromMap(sessionMap: ReadableMap): AirwallexSession {
-    val type = sessionMap.getStringSafe("type") ?: error("type is required")
+    val type = sessionMap.getStringOrNull("type") ?: error("type is required")
     return when (type) {
       "OneOff" -> {
         AirwallexPaymentSessionConverter.fromReadableMap(sessionMap)

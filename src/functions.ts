@@ -1,5 +1,5 @@
 import NativeAirwallexSdk from './NativeAirwallexSdk';
-import type { PaymentSession } from './types';
+import type { PaymentConsent, PaymentSession } from './types';
 import type { Card } from './types/Card';
 import type { PaymentResult } from './types/PaymentResult';
 
@@ -16,36 +16,34 @@ export const initialize = async (
 };
 
 export const presentPaymentFlow = async (
-  clientSecret: string,
   session: PaymentSession
 ): Promise<PaymentResult> => {
-  return NativeAirwallexSdk.presentPaymentFlow(clientSecret, session);
+  return NativeAirwallexSdk.presentPaymentFlow(session);
 };
 
 export const presentCardPaymentFlow = async (
-  clientSecret: string,
   session: PaymentSession
 ): Promise<PaymentResult> => {
-  return NativeAirwallexSdk.presentCardPaymentFlow(clientSecret, session);
+  return NativeAirwallexSdk.presentCardPaymentFlow(session);
 };
 
 export const startGooglePay = async (
-  clientSecret: string,
   session: PaymentSession
 ): Promise<PaymentResult> => {
-  return NativeAirwallexSdk.startGooglePay(clientSecret, session);
+  return NativeAirwallexSdk.startGooglePay(session);
 };
 
 export const payWithCardDetails = async (
-  clientSecret: string,
   session: PaymentSession,
   card: Card,
   saveCard: boolean
 ): Promise<PaymentResult> => {
-  return NativeAirwallexSdk.payWithCardDetails(
-    clientSecret,
-    session,
-    card,
-    saveCard
-  );
+  return NativeAirwallexSdk.payWithCardDetails(session, card, saveCard);
+};
+
+export const payWithPaymentConsent = async (
+  session: PaymentSession,
+  paymentConsent: PaymentConsent
+): Promise<PaymentResult> => {
+  return NativeAirwallexSdk.payWithPaymentConsent(session, paymentConsent);
 };

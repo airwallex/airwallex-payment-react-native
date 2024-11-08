@@ -1,7 +1,6 @@
 package com.airwallexpaymentreactnative.util
 
 import com.airwallex.android.core.AirwallexRecurringSession
-import com.airwallex.android.core.model.PaymentConsent
 import com.facebook.react.bridge.ReadableMap
 import java.math.BigDecimal
 
@@ -10,39 +9,35 @@ object AirwallexRecurringSessionConverter {
   fun fromReadableMap(
     sessionMap: ReadableMap
   ): AirwallexRecurringSession {
-    val nextTriggerBy = sessionMap.getStringSafe("nextTriggeredBy")?.let {
-      toNextTriggeredBy(it) ?: error("Invalid NextTriggeredBy value")
-    } ?: error("nextTriggeredBy is required")
+    val nextTriggerBy = sessionMap.toNextTriggeredBy()?: error("nextTriggeredBy is error")
 
-    val clientSecret = sessionMap.getStringSafe("clientSecret") ?: error("clientSecret is required")
+    val clientSecret = sessionMap.getStringOrNull("clientSecret") ?: error("clientSecret is required")
 
-    val requiresCVC = sessionMap.getBooleanSafe("requiresCVC", false)
+    val requiresCVC = sessionMap.getBooleanOrDefault("requiresCVC", false)
 
-    val merchantTriggerReason = sessionMap.getStringSafe("merchantTriggerReason")?.let {
-      toMerchantTriggerReason(it) ?: error("Invalid MerchantTriggerReason value")
-    } ?: PaymentConsent.MerchantTriggerReason.UNSCHEDULED
+    val merchantTriggerReason = sessionMap.toMerchantTriggerReason()?: error("merchantTriggerReason is error")
 
-    val currency = sessionMap.getStringSafe("currency") ?: error("currency is required")
+    val currency = sessionMap.getStringOrNull("currency") ?: error("currency is required")
 
-    val countryCode = sessionMap.getStringSafe("countryCode") ?: error("countryCode is required")
+    val countryCode = sessionMap.getStringOrNull("countryCode") ?: error("countryCode is required")
 
-    val amount = sessionMap.getDoubleSafe("amount", -1.0).let {
+    val amount = sessionMap.getDoubleOrDefault("amount", -1.0).let {
       if (it == -1.0) error("amount is required")
       BigDecimal.valueOf(it)
     }
 
-    val customerId = sessionMap.getStringSafe("customerId") ?: error("customerId is required")
+    val customerId = sessionMap.getStringOrNull("customerId") ?: error("customerId is required")
 
-    val returnUrl = sessionMap.getStringSafe("returnUrl")
+    val returnUrl = sessionMap.getStringOrNull("returnUrl")
 
-    val shipping = sessionMap.getMapSafe("shipping")?.toShipping()
+    val shipping = sessionMap.getMapOrNull("shipping")?.toShipping()
 
-    val isBillingRequired = sessionMap.getBooleanSafe("isBillingRequired", true)
+    val isBillingRequired = sessionMap.getBooleanOrDefault("isBillingRequired", true)
 
     val paymentMethods =
-      sessionMap.getArraySafe("paymentMethods")?.toArrayList()?.map { it.toString() }
+      sessionMap.getArrayOrNull("paymentMethods")?.toArrayList()?.map { it.toString() }
 
-    val isEmailRequired = sessionMap.getBooleanSafe("isEmailRequired", false)
+    val isEmailRequired = sessionMap.getBooleanOrDefault("isEmailRequired", false)
 
     return AirwallexRecurringSession.Builder(
       customerId = customerId,
@@ -60,21 +55,5 @@ object AirwallexRecurringSessionConverter {
       .setRequireEmail(isEmailRequired)
       .setPaymentMethods(paymentMethods)
       .build()
-  }
-
-  private fun toNextTriggeredBy(value: String): PaymentConsent.NextTriggeredBy? {
-    return when (value.lowercase()) {
-      "merchant" -> PaymentConsent.NextTriggeredBy.MERCHANT
-      "customer" -> PaymentConsent.NextTriggeredBy.CUSTOMER
-      else -> null
-    }
-  }
-
-  private fun toMerchantTriggerReason(value: String): PaymentConsent.MerchantTriggerReason? {
-    return when (value.lowercase()) {
-      "scheduled" -> PaymentConsent.MerchantTriggerReason.SCHEDULED
-      "unscheduled" -> PaymentConsent.MerchantTriggerReason.UNSCHEDULED
-      else -> null
-    }
   }
 }
