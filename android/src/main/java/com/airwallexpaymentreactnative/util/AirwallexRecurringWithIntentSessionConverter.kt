@@ -35,7 +35,7 @@ object AirwallexRecurringWithIntentSessionConverter {
 
     val returnUrl = sessionMap.getStringOrNull("returnUrl")
     val requiresCVC = sessionMap.getBooleanOrDefault("requiresCVC", false)
-    val merchantTriggerReason = sessionMap.toMerchantTriggerReason()?: error("merchantTriggerReason is error")
+    val merchantTriggerReason = sessionMap.toMerchantTriggerReason()
     val paymentMethods = sessionMap.getArrayOrNull("paymentMethods")
       ?.toArrayList()?.map { it.toString() }
 
@@ -57,20 +57,23 @@ object AirwallexRecurringWithIntentSessionConverter {
       clientSecret = clientSecret
     )
 
-    return AirwallexRecurringWithIntentSession.Builder(
+    val sessionBuilder =  AirwallexRecurringWithIntentSession.Builder(
       paymentIntent = paymentIntent,
       nextTriggerBy = nextTriggerBy,
       customerId = customerId,
       countryCode = countryCode
     )
       .setRequireCvc(requiresCVC)
-      .setMerchantTriggerReason(merchantTriggerReason)
       .setPaymentMethods(paymentMethods)
       .setRequireBillingInformation(isBillingRequired)
       .setRequireEmail(isEmailRequired)
       .setReturnUrl(returnUrl)
       .setAutoCapture(autoCapture)
-      .build()
+
+    merchantTriggerReason?.let {
+      sessionBuilder.setMerchantTriggerReason(merchantTriggerReason)
+    }
+    return sessionBuilder.build()
   }
 }
 

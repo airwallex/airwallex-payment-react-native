@@ -9,13 +9,14 @@ object AirwallexRecurringSessionConverter {
   fun fromReadableMap(
     sessionMap: ReadableMap
   ): AirwallexRecurringSession {
-    val nextTriggerBy = sessionMap.toNextTriggeredBy()?: error("nextTriggeredBy is error")
+    val nextTriggerBy = sessionMap.toNextTriggeredBy() ?: error("nextTriggeredBy is error")
 
-    val clientSecret = sessionMap.getStringOrNull("clientSecret") ?: error("clientSecret is required")
+    val clientSecret =
+      sessionMap.getStringOrNull("clientSecret") ?: error("clientSecret is required")
 
     val requiresCVC = sessionMap.getBooleanOrDefault("requiresCVC", false)
 
-    val merchantTriggerReason = sessionMap.toMerchantTriggerReason()?: error("merchantTriggerReason is error")
+    val merchantTriggerReason = sessionMap.toMerchantTriggerReason()
 
     val currency = sessionMap.getStringOrNull("currency") ?: error("currency is required")
 
@@ -39,7 +40,7 @@ object AirwallexRecurringSessionConverter {
 
     val isEmailRequired = sessionMap.getBooleanOrDefault("isEmailRequired", false)
 
-    return AirwallexRecurringSession.Builder(
+    val sessionBuilder = AirwallexRecurringSession.Builder(
       customerId = customerId,
       currency = currency,
       amount = amount,
@@ -50,10 +51,13 @@ object AirwallexRecurringSessionConverter {
       .setShipping(shipping)
       .setRequireBillingInformation(isBillingRequired)
       .setRequireCvc(requiresCVC)
-      .setMerchantTriggerReason(merchantTriggerReason)
       .setReturnUrl(returnUrl)
       .setRequireEmail(isEmailRequired)
       .setPaymentMethods(paymentMethods)
-      .build()
+
+    merchantTriggerReason?.let {
+      sessionBuilder.setMerchantTriggerReason(merchantTriggerReason)
+    }
+    return sessionBuilder.build()
   }
 }

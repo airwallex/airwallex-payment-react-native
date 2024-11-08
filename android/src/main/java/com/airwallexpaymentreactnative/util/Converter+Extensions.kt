@@ -110,10 +110,10 @@ fun ReadableMap.toMerchantTriggerReason(): PaymentConsent.MerchantTriggerReason?
 
 fun ReadableMap.toPaymentConsentStatus(): PaymentConsent.PaymentConsentStatus? {
   val statusString = getStringOrNull("status") ?: ""
-  return when (statusString.uppercase()) {
-    "PENDING_VERIFICATION" -> PaymentConsent.PaymentConsentStatus.PENDING_VERIFICATION
-    "VERIFIED" -> PaymentConsent.PaymentConsentStatus.VERIFIED
-    "DISABLED" -> PaymentConsent.PaymentConsentStatus.DISABLED
+  return when (statusString.lowercase()) {
+    "pending_verification" -> PaymentConsent.PaymentConsentStatus.PENDING_VERIFICATION
+    "verified" -> PaymentConsent.PaymentConsentStatus.VERIFIED
+    "disabled" -> PaymentConsent.PaymentConsentStatus.DISABLED
     else -> null
   }
 }
