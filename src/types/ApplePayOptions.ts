@@ -15,6 +15,7 @@ export enum ApplePaySupportedNetwork {
   Amex = 'amex',
   Discover = 'discover',
   JCB = 'jcb',
+  Mastreo = 'maestro',
 }
 
 export enum ApplePayMerchantCapability {

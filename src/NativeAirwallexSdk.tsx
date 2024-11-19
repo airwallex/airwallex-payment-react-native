@@ -10,11 +10,13 @@ type NativeAirwallexSdkType = {
     saveLogToLocal: boolean
   ): Promise<void>;
 
-  presentPaymentFlow(session: PaymentSession): Promise<PaymentResult>;
+  presentEntirePaymentFlow(session: PaymentSession): Promise<PaymentResult>;
 
   presentCardPaymentFlow(session: PaymentSession): Promise<PaymentResult>;
 
   startGooglePay(session: PaymentSession): Promise<PaymentResult>;
+
+  startApplePay(session: PaymentSession): Promise<PaymentResult>;
 
   payWithCardDetails(
     session: PaymentSession,
@@ -22,7 +24,7 @@ type NativeAirwallexSdkType = {
     saveCard: boolean
   ): Promise<PaymentResult>;
 
-  payWithPaymentConsent(
+  payWithConsent(
     session: PaymentSession,
     paymentConsent: PaymentConsent
   ): Promise<PaymentResult>;

@@ -11,7 +11,7 @@ npm install airwallex-payment-react-native
 ## Usage
 
 ```js
-import { presentPaymentFlow } from 'airwallex-payment-react-native';
+import { presentEntirePaymentFlow } from 'airwallex-payment-react-native';
 import type { PaymentSession } from 'airwallex-payment-react-native';
 
 // ...
@@ -26,7 +26,7 @@ const session: PaymentSession = {
     isBillingRequired: false,
     paymentMethods: ['card'],
   };
-presentPaymentFlow('Your client secret', session, 'staging')
+presentEntirePaymentFlow('Your client secret', session, 'staging')
     .then((result) => {
         switch (result.status) {
             // handle different payment result status in your UI

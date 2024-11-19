@@ -10,6 +10,10 @@ import {
   Format,
   NextTriggeredBy,
   MerchantTriggerReason,
+  ApplePaySupportedNetwork,
+  CartSummaryItemType,
+  ApplePayMerchantCapability,
+  ContactField,
 } from 'airwallex-payment-react-native';
 import PaymentService from '../api/PaymentService';
 import { getCustomerParams, getPaymentParams } from '../api/PaymentParams';
@@ -58,7 +62,7 @@ class SessionCreator {
         shipping: this.createShipping(),
         paymentIntentId: paymentIntentId,
         currency: currency,
-        countryCode: 'UK',
+        countryCode: 'HK',
         amount: amount,
         isBillingRequired: true,
         isEmailRequired: false,
@@ -70,6 +74,37 @@ class SessionCreator {
             format: Format.FULL,
             phoneNumberRequired: false,
           },
+        },
+        applePayOptions: {
+          merchantIdentifier: 'merchant.com.airwallex.paymentacceptance',
+          supportedNetworks: [
+            ApplePaySupportedNetwork.Visa,
+            ApplePaySupportedNetwork.MasterCard,
+            ApplePaySupportedNetwork.UnionPay,
+          ],
+          additionalPaymentSummaryItems: [
+            {
+              label: 'goods',
+              amount: 2,
+              type: CartSummaryItemType.Pending,
+            },
+            {
+              label: 'tax',
+              amount: 1,
+            },
+          ],
+          merchantCapabilities: [
+            ApplePayMerchantCapability.Supports3DS,
+            ApplePayMerchantCapability.SupportsCredit,
+            ApplePayMerchantCapability.SupportsDebit,
+          ],
+          requiredBillingContactFields: [
+            ContactField.Name,
+            ContactField.PostalAddress,
+            ContactField.EmailAddress,
+          ],
+          supportedCountries: ['HK', 'US', 'AU'],
+          totalPriceLabel: 'COMPANY, INC.',
         },
         // paymentMethods: ['card'],
         autoCapture: true,

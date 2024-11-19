@@ -15,7 +15,7 @@ interface BaseSession {
   googlePayOptions?: GooglePayOptions;
   applePayOptions?: ApplePayOptions;
   paymentMethods?: string[];
-  clientSecret?: string;
+  clientSecret: string;
 }
 
 export interface OneOffSession extends BaseSession {

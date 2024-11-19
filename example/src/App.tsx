@@ -10,9 +10,10 @@ import {
 import {
   initialize,
   payWithCardDetails,
-  payWithPaymentConsent,
+  payWithConsent,
   presentCardPaymentFlow,
-  presentPaymentFlow,
+  presentEntirePaymentFlow,
+  startApplePay,
   startGooglePay,
   type PaymentSession,
 } from 'airwallex-payment-react-native';
@@ -137,7 +138,7 @@ export default function App() {
         setLoading(true);
         const newSession = await fetchSession();
         if (newSession && paymentConsent) {
-          await payWithPaymentConsent(newSession, paymentConsent)
+          await payWithConsent(newSession, paymentConsent)
             .then(handleResult)
             .catch((error) => Alert.alert('Payment failed', error.message));
         } else {
@@ -221,7 +222,7 @@ export default function App() {
       <TouchableOpacity
         style={styles.button}
         onPress={() => {
-          handlePaymentFlowPress(presentPaymentFlow);
+          handlePaymentFlowPress(presentEntirePaymentFlow);
         }}
       >
         <Text style={styles.buttonText}>PresentEntirePaymentFlow</Text>
@@ -256,6 +257,16 @@ export default function App() {
           }}
         >
           <Text style={styles.buttonText}>startGooglePay</Text>
+        </TouchableOpacity>
+      )}
+      {Platform.OS === 'ios' && paymentMode === 'oneOff' && (
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            handlePaymentFlowPress(startApplePay);
+          }}
+        >
+          <Text style={styles.buttonText}>startApplePay</Text>
         </TouchableOpacity>
       )}
     </View>

@@ -1,16 +1,16 @@
 PODS:
   - airwallex-payment-react-native (0.1.0):
-    - Airwallex/ApplePay (~> 5.5.4)
-    - Airwallex/Card (~> 5.5.4)
-    - Airwallex/Core (~> 5.5.4)
-    - Airwallex/Redirect (~> 5.5.4)
+    - Airwallex/ApplePay (~> 5.5.7)
+    - Airwallex/Card (~> 5.5.7)
+    - Airwallex/Core (~> 5.5.7)
+    - Airwallex/Redirect (~> 5.5.7)
     - React-Core
-  - Airwallex/ApplePay (5.5.4):
+  - Airwallex/ApplePay (5.5.7):
     - Airwallex/Core
-  - Airwallex/Card (5.5.4):
+  - Airwallex/Card (5.5.7):
     - Airwallex/Core
-  - Airwallex/Core (5.5.4)
-  - Airwallex/Redirect (5.5.4):
+  - Airwallex/Core (5.5.7)
+  - Airwallex/Redirect (5.5.7):
     - Airwallex/Core
   - boost (1.84.0)
   - DoubleConversion (1.1.6)
@@ -1491,6 +1491,8 @@ PODS:
     - React-Core
     - React-jsi
   - ReactTestApp-Resources (1.0.0-dev)
+  - RNCPicker (2.9.0):
+    - React-Core
   - SocketRocket (0.7.0)
   - Yoga (0.0.0)
 
@@ -1560,6 +1562,7 @@ DEPENDENCIES:
   - "ReactNativeHost (from `../node_modules/@rnx-kit/react-native-host`)"
   - ReactTestApp-DevSupport (from `../node_modules/react-native-test-app`)
   - ReactTestApp-Resources (from `..`)
+  - "RNCPicker (from `../node_modules/@react-native-picker/picker`)"
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -1694,12 +1697,14 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-test-app"
   ReactTestApp-Resources:
     :path: ".."
+  RNCPicker:
+    :path: "../node_modules/@react-native-picker/picker"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  Airwallex: fe172d849441683852d6be50f04f3cf90fa6dbac
-  airwallex-payment-react-native: 425273a2ad051576e60b634047c249f3a28860a3
+  Airwallex: a349f7804354e092f19d8e9aabcef20e1f40aa8d
+  airwallex-payment-react-native: 3b83163f10e710e3defaa105864825762c3e3866
   boost: 4cb898d0bf20404aab1850c656dcea009429d6c1
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   FBLazyVector: 38bb611218305c3bc61803e287b8a81c6f63b619
@@ -1762,6 +1767,7 @@ SPEC CHECKSUMS:
   ReactNativeHost: 99c0ffb175cd69de2ac9a70892cd22dac65ea79d
   ReactTestApp-DevSupport: cb1c13fd708e12d8cfe9a8adf4bab85519cec65d
   ReactTestApp-Resources: 7db90c026cccdf40cfa495705ad436ccc4d64154
+  RNCPicker: f963e01f78e546a93b98aa201501713dbda14e94
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   Yoga: a1d7895431387402a674fd0d1c04ec85e87909b8
 

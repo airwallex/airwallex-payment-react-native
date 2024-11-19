@@ -81,7 +81,7 @@ class AirwallexPaymentReactNativeModule(private val reactContext: ReactApplicati
   }
 
   @ReactMethod
-  fun presentPaymentFlow(session: ReadableMap, promise: Promise) {
+  fun presentEntirePaymentFlow(session: ReadableMap, promise: Promise) {
     val currentActivity = requireComponentActivity(promise) ?: return
     try {
       val paymentSession = parseSessionFromMap(session)
@@ -204,7 +204,7 @@ class AirwallexPaymentReactNativeModule(private val reactContext: ReactApplicati
   }
 
   @ReactMethod
-  fun payWithPaymentConsent(
+  fun payWithConsent(
     session: ReadableMap,
     paymentConsentMap: ReadableMap,
     promise: Promise
