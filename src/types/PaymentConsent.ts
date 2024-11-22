@@ -19,7 +19,6 @@ export interface PaymentConsent {
   status?: string;
   nextTriggeredBy?: NextTriggeredBy;
   merchantTriggerReason?: MerchantTriggerReason;
-  requiresCvc: boolean;
   createdAt?: string;
   updatedAt?: string;
   clientSecret?: string;

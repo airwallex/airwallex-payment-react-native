@@ -84,7 +84,7 @@ export default function App() {
     }
   }
 
-  const handleResult = (result: PaymentResult) => {
+  const handlePaymentResult = (result: PaymentResult) => {
     switch (result.status) {
       case 'success':
         let message = 'Your payment has been charged';
@@ -111,7 +111,7 @@ export default function App() {
     let session = await fetchSession();
     if (session) {
       fun(session)
-        .then(handleResult)
+        .then(handlePaymentResult)
         .catch((error) => Alert.alert('Payment failed', error.message));
     } else {
       Alert.alert('Error', 'Session could not be created.');
@@ -120,40 +120,32 @@ export default function App() {
 
   const handlePayWithCardDetails = async () => {
     const saveCard = true;
-    await nativePayWithCardDetails(saveCard, environment, async (_, result) => {
-      handleResult(result);
+    await nativePayWithCardDetails(saveCard, async (_, result) => {
+      handlePaymentResult(result);
     });
   };
 
   const handlePayWithSavedCard = async () => {
     const saveCard = true;
-    await nativePayWithCardDetails(
-      saveCard,
-      environment,
-      async (session, _) => {
-        const paymentConsent = await PaymentConsentCreator.getPaymentConsents(
-          paymentService,
-          session.customerId ?? ''
-        );
-        setLoading(true);
-        const newSession = await fetchSession();
-        if (newSession && paymentConsent) {
-          await payWithConsent(newSession, paymentConsent)
-            .then(handleResult)
-            .catch((error) => Alert.alert('Payment failed', error.message));
-        } else {
-          Alert.alert(
-            'Error',
-            'paymentConsent or session could not be created.'
-          );
-        }
+    await nativePayWithCardDetails(saveCard, async (session, _) => {
+      const paymentConsent = await PaymentConsentCreator.getPaymentConsents(
+        paymentService,
+        session.customerId ?? ''
+      );
+      setLoading(true);
+      const newSession = await fetchSession();
+      if (newSession && paymentConsent) {
+        await payWithConsent(newSession, paymentConsent)
+          .then(handlePaymentResult)
+          .catch((error) => Alert.alert('Payment failed', error.message));
+      } else {
+        Alert.alert('Error', 'paymentConsent or session could not be created.');
       }
-    );
+    });
   };
 
   const nativePayWithCardDetails = async (
     saveCard: boolean,
-    environment: string,
     handleResult: (
       session: PaymentSession,
       result: PaymentResult

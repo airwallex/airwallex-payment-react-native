@@ -26,7 +26,7 @@ type NativeAirwallexSdkType = {
 
   payWithConsent(
     session: PaymentSession,
-    paymentConsent: PaymentConsent
+    consent: PaymentConsent
   ): Promise<PaymentResult>;
 };
 

@@ -61,7 +61,6 @@ class PaymentConsentCreator {
           status: firstItem.status,
           nextTriggeredBy: firstItem.next_triggered_by,
           merchantTriggerReason: undefined,
-          requiresCvc: false,
           createdAt: firstItem.created_at,
           updatedAt: firstItem.updated_at,
           clientSecret: undefined,

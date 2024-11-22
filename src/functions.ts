@@ -1,3 +1,4 @@
+import { transformKeysToSnakeCase } from './helpers';
 import NativeAirwallexSdk from './NativeAirwallexSdk';
 import type { PaymentConsent, PaymentSession } from './types';
 import type { Card } from './types/Card';
@@ -44,12 +45,25 @@ export const payWithCardDetails = async (
   card: Card,
   saveCard: boolean
 ): Promise<PaymentResult> => {
-  return NativeAirwallexSdk.payWithCardDetails(session, card, saveCard);
+  return NativeAirwallexSdk.payWithCardDetails(
+    session,
+    transformKeysToSnakeCase(card),
+    saveCard
+  );
 };
 
 export const payWithConsent = async (
   session: PaymentSession,
   consent: PaymentConsent
 ): Promise<PaymentResult> => {
-  return NativeAirwallexSdk.payWithConsent(session, consent);
+  const transformedConsent = transformKeysToSnakeCase({
+    ...consent,
+    paymentMethod: transformKeysToSnakeCase({
+      ...consent.paymentMethod,
+      card: transformKeysToSnakeCase(consent.paymentMethod?.card),
+      billing: transformKeysToSnakeCase(consent.paymentMethod?.billing),
+    }),
+  });
+
+  return NativeAirwallexSdk.payWithConsent(session, transformedConsent);
 };
