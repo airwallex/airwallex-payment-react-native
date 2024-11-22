@@ -27,11 +27,11 @@ fun ReadableMap.getMapOrNull(key: String): ReadableMap? =
   if (hasKey(key)) getMap(key) else null
 
 fun ReadableMap.toShipping(): Shipping? {
-  val firstName = getStringOrNull("firstName")
-  val lastName = getStringOrNull("lastName")
-  val phone = getStringOrNull("phoneNumber")
+  val firstName = getStringOrNull("firstName") ?: getStringOrNull("first_name")
+  val lastName = getStringOrNull("lastName") ?: getStringOrNull("last_name")
+  val phone = getStringOrNull("phoneNumber") ?: getStringOrNull("phone_number")
   val email = getStringOrNull("email")
-  val shippingMethod = getStringOrNull("shippingMethod")
+  val shippingMethod = getStringOrNull("shippingMethod") ?: getStringOrNull("shipping_method")
   val address = getMapOrNull("address")?.toAddress()
 
   return if (firstName == null && lastName == null && phone == null && email == null && shippingMethod == null && address == null) {
@@ -49,11 +49,11 @@ fun ReadableMap.toShipping(): Shipping? {
 }
 
 fun ReadableMap.toBilling(): Billing? {
-  val firstName = getStringOrNull("firstName")
-  val lastName = getStringOrNull("lastName")
-  val phone = getStringOrNull("phoneNumber")
+  val firstName = getStringOrNull("firstName") ?: getStringOrNull("first_name")
+  val lastName = getStringOrNull("lastName") ?: getStringOrNull("last_name")
+  val phone = getStringOrNull("phoneNumber") ?: getStringOrNull("phone_number")
   val email = getStringOrNull("email")
-  val dateOfBirth = getStringOrNull("dateOfBirth")
+  val dateOfBirth = getStringOrNull("dateOfBirth") ?: getStringOrNull("date_of_birth")
   val address = getMapOrNull("address")?.toAddress()
 
   return if (firstName == null && lastName == null && phone == null && email == null && dateOfBirth == null && address == null) {
@@ -71,7 +71,7 @@ fun ReadableMap.toBilling(): Billing? {
 }
 
 fun ReadableMap.toAddress(): Address? {
-  val countryCode = getStringOrNull("countryCode")
+  val countryCode = getStringOrNull("countryCode") ?: getStringOrNull("country_code")
   val state = getStringOrNull("state")
   val city = getStringOrNull("city")
   val street = getStringOrNull("street")
@@ -91,7 +91,8 @@ fun ReadableMap.toAddress(): Address? {
 }
 
 fun ReadableMap.toNextTriggeredBy(): PaymentConsent.NextTriggeredBy? {
-  val nextTriggeredBy = getStringOrNull("nextTriggeredBy") ?: ""
+  val nextTriggeredBy =
+    getStringOrNull("nextTriggeredBy") ?: getStringOrNull("next_triggered_by") ?: ""
   return when (nextTriggeredBy.lowercase()) {
     "merchant" -> PaymentConsent.NextTriggeredBy.MERCHANT
     "customer" -> PaymentConsent.NextTriggeredBy.CUSTOMER
@@ -100,7 +101,8 @@ fun ReadableMap.toNextTriggeredBy(): PaymentConsent.NextTriggeredBy? {
 }
 
 fun ReadableMap.toMerchantTriggerReason(): PaymentConsent.MerchantTriggerReason? {
-  val merchantTriggerReason = getStringOrNull("merchantTriggerReason") ?: ""
+  val merchantTriggerReason =
+    getStringOrNull("merchantTriggerReason") ?: getStringOrNull("merchant_trigger_reason") ?: ""
   return when (merchantTriggerReason.lowercase()) {
     "scheduled" -> PaymentConsent.MerchantTriggerReason.SCHEDULED
     "unscheduled" -> PaymentConsent.MerchantTriggerReason.UNSCHEDULED
@@ -119,7 +121,7 @@ fun ReadableMap.toPaymentConsentStatus(): PaymentConsent.PaymentConsentStatus? {
 }
 
 fun ReadableMap.toNumberType(): PaymentMethod.Card.NumberType? {
-  val numberTypeString = getStringOrNull("numberType") ?: ""
+  val numberTypeString = getStringOrNull("number_type") ?: getStringOrNull("numberType") ?: ""
   return when (numberTypeString.lowercase()) {
     "pan" -> PaymentMethod.Card.NumberType.PAN
     "external_network_token" -> PaymentMethod.Card.NumberType.EXTERNAL_NETWORK_TOKEN

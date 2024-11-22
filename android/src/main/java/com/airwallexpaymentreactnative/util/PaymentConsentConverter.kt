@@ -17,18 +17,21 @@ object PaymentConsentConverter {
 
   private fun ReadableMap.toPaymentConsent(): PaymentConsent {
     val id = getStringOrNull("id")
-    val requestId = getStringOrNull("requestId")
-    val customerId = getStringOrNull("customerId")
+    val requestId = getStringOrNull("request_id") ?: getStringOrNull("requestId")
+    val customerId = getStringOrNull("customer_id") ?: getStringOrNull("customerId")
     val nextTriggeredBy = toNextTriggeredBy()
     val merchantTriggerReason = toMerchantTriggerReason()
-    val requiresCvc = getBooleanOrDefault("requiresCvc", false)
+    val requiresCvc = getBooleanOrDefault("requires_cvc", false)
     val status = toPaymentConsentStatus()
-    val createdAt = getStringOrNull("createdAt")?.let { parseDateString(it) }
-    val updatedAt = getStringOrNull("updatedAt")?.let { parseDateString(it) }
-    val clientSecret = getStringOrNull("clientSecret")
+    val createdAt =
+      (getStringOrNull("created_at") ?: getStringOrNull("createdAt"))?.let { parseDateString(it) }
+    val updatedAt =
+      (getStringOrNull("updated_at") ?: getStringOrNull("updatedAt"))?.let { parseDateString(it) }
+    val clientSecret = getStringOrNull("client_secret") ?: getStringOrNull("clientSecret")
 
-    val paymentMethod = getMapOrNull("paymentMethod")?.toPaymentMethod()
-    val initialPaymentIntentId = getStringOrNull("initialPaymentIntentId")
+    val paymentMethod =
+      (getMapOrNull("payment_method") ?: getMapOrNull("paymentMethod"))?.toPaymentMethod()
+    val initialPaymentIntentId = getStringOrNull("initial_payment_intent_id")
     val metadata = getMapOrNull("metadata")?.toHashMap() as? Map<String, Any?>
 
     return PaymentConsent(
@@ -52,12 +55,12 @@ object PaymentConsentConverter {
 
   private fun ReadableMap.toPaymentMethod(): PaymentMethod {
     val id = getStringOrNull("id") ?: error("paymentMethod id is required")
-    val customerId = getStringOrNull("customerId")
+    val customerId = getStringOrNull("customer_id") ?: getStringOrNull("customerId")
     val type = getStringOrNull("type") ?: error("paymentMethod type is required")
     val card = getMapOrNull("card")?.let { PaymentCardConverter.fromReadableMap(it) }
     val billing = getMapOrNull("billing")?.toBilling()
 
-    val requestId = getStringOrNull("requestId")
+    val requestId = getStringOrNull("request_id") ?: getStringOrNull("requestId")
     return PaymentMethod.Builder()
       .setId(id)
       .setCustomerId(customerId)
