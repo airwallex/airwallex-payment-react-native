@@ -1,16 +1,16 @@
 PODS:
   - airwallex-payment-react-native (0.1.0):
-    - Airwallex/ApplePay (~> 5.5.7)
-    - Airwallex/Card (~> 5.5.7)
-    - Airwallex/Core (~> 5.5.7)
-    - Airwallex/Redirect (~> 5.5.7)
+    - Airwallex/ApplePay (~> 5.6.0)
+    - Airwallex/Card (~> 5.6.0)
+    - Airwallex/Core (~> 5.6.0)
+    - Airwallex/Redirect (~> 5.6.0)
     - React-Core
-  - Airwallex/ApplePay (5.5.7):
+  - Airwallex/ApplePay (5.6.0):
     - Airwallex/Core
-  - Airwallex/Card (5.5.7):
+  - Airwallex/Card (5.6.0):
     - Airwallex/Core
-  - Airwallex/Core (5.5.7)
-  - Airwallex/Redirect (5.5.7):
+  - Airwallex/Core (5.6.0)
+  - Airwallex/Redirect (5.6.0):
     - Airwallex/Core
   - boost (1.84.0)
   - DoubleConversion (1.1.6)
@@ -1703,8 +1703,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  Airwallex: a349f7804354e092f19d8e9aabcef20e1f40aa8d
-  airwallex-payment-react-native: 3b83163f10e710e3defaa105864825762c3e3866
+  Airwallex: 8f2bf67f635ddee52de59b4170e9acd6cfcbdb2e
+  airwallex-payment-react-native: 38dfe9e33d03fe8f394650a9b9423206314bcaaa
   boost: 4cb898d0bf20404aab1850c656dcea009429d6c1
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   FBLazyVector: 38bb611218305c3bc61803e287b8a81c6f63b619
