@@ -2,29 +2,27 @@ name: Push release to NPM
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - '*'
 
 jobs:
-  maven:
+  publish-npm:
     runs-on: ubuntu-latest
     env:
       NODE-VERSION: 20
     timeout-minutes: 30
     steps:
-      - name: Checkout project
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE-VERSION }}
           registry-url: https://registry.npmjs.org/
-      - name: Install dependencies
-        run: yarn install
-      - name: Build the library
-        run: yarn prepare
+      - name: Build and publish to npm
+        run: yarn install --frozen-lockfile
       - name: Upload artifacts
-        run: yarn release
+        run: |
+          echo always-auth=true > .npmrc
+          echo "registry=https://registry.npmjs.org/" >> .npmrc
+          echo //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }} > .npmrc
+          npm publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           CI: true
