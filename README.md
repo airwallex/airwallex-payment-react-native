@@ -11,11 +11,10 @@ npm install airwallex-payment-react-native
 ## Usage
 
 ```js
-import { presentEntirePaymentFlow } from 'airwallex-payment-react-native';
+import { initialize, presentEntirePaymentFlow } from 'airwallex-payment-react-native';
 import type { PaymentSession } from 'airwallex-payment-react-native';
 
-// ...
-
+// initialize SDK with configurations
 initialize();
 
 const session: PaymentSession = {
@@ -29,11 +28,12 @@ const session: PaymentSession = {
     paymentMethods: ['card'],
   };
 
-// You can also use presentCardPaymentFlow, startGooglePay, startApplePay, payWithCardDetails or payWithConsent to launch each individual component.
+/* You can also use presentCardPaymentFlow, startGooglePay, startApplePay, payWithCardDetails 
+or payWithConsent to launch each individual component. */
 presentEntirePaymentFlow('Your client secret', session, 'staging')
     .then((result) => {
         switch (result.status) {
-            // handle different payment result status in your UI.
+            // handle different payment result status in your UI
             case 'success':
             case 'inProgress':
             case 'cancelled':
