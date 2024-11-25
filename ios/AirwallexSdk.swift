@@ -8,6 +8,7 @@ class AirwallexSdk: RCTEventEmitter {
     private var paymentConsentID: String?
     private var applePayProvider: AWXApplePayProvider?
     private var cardProvider: AWXCardProvider?
+    private var cardSession: AWXSession?
     private var hostVC: UIViewController?
     
     @objc(initialize:enableLogging:saveLogToLocal:)
@@ -85,6 +86,7 @@ class AirwallexSdk: RCTEventEmitter {
             self.hostVC = self.getViewController()
             cardProvider.confirmPaymentIntent(with: card, billing: nil, saveCard: saveCard)
         }
+        self.cardSession = session
         self.cardProvider = cardProvider
     }
     
@@ -152,6 +154,7 @@ extension AirwallexSdk: AWXProviderDelegate {
     }
     
     func provider(_ provider: AWXDefaultProvider, didInitializePaymentIntentId paymentIntentId: String) {
+        cardSession?.updateInitialPaymentIntentId(paymentIntentId)
     }
 
     func provider(_ provider: AWXDefaultProvider, didCompleteWith status: AirwallexPaymentStatus, error: (any Error)?) {
@@ -174,6 +177,7 @@ extension AirwallexSdk: AWXProviderDelegate {
         paymentConsentID = nil
         applePayProvider = nil
         cardProvider = nil
+        cardSession = nil
         hostVC = nil
     }
     

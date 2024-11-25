@@ -4,11 +4,11 @@ import type { PaymentConsent, PaymentSession } from './types';
 import type { Card } from './types/Card';
 import type { PaymentResult } from './types/PaymentResult';
 
-export const initialize = async (
+export const initialize = (
   environment: 'staging' | 'demo' | 'production' = 'production',
   enableLogging: boolean = true,
   saveLogToLocal: boolean = false
-): Promise<void> => {
+) => {
   return NativeAirwallexSdk.initialize(
     environment,
     enableLogging,

@@ -16,6 +16,8 @@ import type { PaymentSession } from 'airwallex-payment-react-native';
 
 // ...
 
+initialize();
+
 const session: PaymentSession = {
     type: 'OneOff',
     customerId: 'cus_xxx',
@@ -26,10 +28,12 @@ const session: PaymentSession = {
     isBillingRequired: false,
     paymentMethods: ['card'],
   };
+
+// You can also use presentCardPaymentFlow, startGooglePay, startApplePay, payWithCardDetails or payWithConsent to launch each individual component.
 presentEntirePaymentFlow('Your client secret', session, 'staging')
     .then((result) => {
         switch (result.status) {
-            // handle different payment result status in your UI
+            // handle different payment result status in your UI.
             case 'success':
             case 'inProgress':
             case 'cancelled':

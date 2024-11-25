@@ -37,9 +37,9 @@ export default function App() {
 
   useEffect(() => {
     setPaymentService(new PaymentService(environment, '', ''));
-    const initializeSdk = async (env: Environment) => {
+    const initializeSdk = (env: Environment) => {
       try {
-        await initialize(env, true, false);
+        initialize(env, true, false);
         console.log('SDK initialized successfully');
       } catch (error) {
         console.error('Error initializing SDK:', error);
