@@ -14,11 +14,11 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #4.2.2
 
       - name: Work out the new version via Semantic Release
         if: ${{ inputs.version == '' }}
-        uses: cycjimmy/semantic-release-action@v3
+        uses: cycjimmy/semantic-release-action@8e58d20d0f6c8773181f43eb74d6a05e3099571d #3.4.2
         id: semantic
         with:
           branch: ${{ github.ref_name }}
@@ -35,13 +35,13 @@ jobs:
         shell: bash
 
       - name: Commit version changes
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@3ea6ae190baf489ba007f7c92608f33ce20ef04a #4.16.0
         id: commit
         with:
           commit_message: "chore: bumped versions to ${{ env.VERSION }}"
 
       - name: Publish GitHub release
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@440c8c1cb0ed28b9f43e4d1d670870f059653174 #1.16.0
         with:
           body: ${{ steps.semantic.outputs.new_release_notes }}
           generateReleaseNotes: ${{ steps.semantic.outcome != 'success' }}
