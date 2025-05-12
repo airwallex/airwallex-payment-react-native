@@ -39,7 +39,7 @@ const session: PaymentSession = {
 
 /* You can also use presentCardPaymentFlow, startGooglePay, startApplePay, payWithCardDetails 
 or payWithConsent to launch each individual component. */
-presentEntirePaymentFlow('Your client secret', session, 'staging')
+presentEntirePaymentFlow(session)
     .then((result) => {
         switch (result.status) {
             // handle different payment result status in your UI
