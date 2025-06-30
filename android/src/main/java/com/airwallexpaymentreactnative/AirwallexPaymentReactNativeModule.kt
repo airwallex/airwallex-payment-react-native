@@ -88,7 +88,7 @@ class AirwallexPaymentReactNativeModule(private val reactContext: ReactApplicati
       AirwallexStarter.presentEntirePaymentFlow(
         currentActivity,
         paymentSession,
-        object : Airwallex.PaymentResultListener {
+        paymentResultListener = object : Airwallex.PaymentResultListener {
           override fun onCompleted(status: AirwallexPaymentStatus) {
             when (status) {
               is AirwallexPaymentStatus.Failure -> {

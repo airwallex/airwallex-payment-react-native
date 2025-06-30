@@ -16,8 +16,8 @@
   "dependencies": {
     "@react-native-picker/picker": "^2.9.0",
     "axios": "^1.7.7",
-    "react": "18.3.1",
-    "react-native": "0.75.2",
+    "react": "19.0.0",
+    "react-native": "0.79.3",
     "react-native-picker-select": "^9.3.1",
     "reflect-metadata": "^0.2.2"
   },
@@ -25,12 +25,13 @@
     "@babel/core": "^7.20.0",
     "@babel/preset-env": "^7.20.0",
     "@babel/runtime": "^7.20.0",
-    "@react-native/babel-preset": "0.75.2",
-    "@react-native/metro-config": "0.75.2",
-    "@react-native/typescript-config": "0.75.2",
+    "@react-native-community/cli": "latest",
+    "@react-native/babel-preset": "0.79.3",
+    "@react-native/metro-config": "0.79.3",
+    "@react-native/typescript-config": "0.79.3",
     "@rnx-kit/metro-config": "^2.0.0",
     "react-native-builder-bob": "^0.30.2",
-    "react-native-test-app": "^3.10.5"
+    "react-native-test-app": "^4.4.0"
   },
   "engines": {
     "node": ">=18"
