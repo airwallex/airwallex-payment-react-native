@@ -80,7 +80,12 @@ private extension AWXSession {
             billing = .init(params: shippingDict)
         }
         if let isBillingRequired = params["isBillingRequired"] as? Bool {
-            isBillingInformationRequired = isBillingRequired
+            if (isBillingRequired) {
+                requiredBillingContactFields.insert(.email)
+                requiredBillingContactFields.insert(.phone)
+                requiredBillingContactFields.insert(.address)
+                requiredBillingContactFields.insert(.countryCode)
+            }
         }
         countryCode = params["countryCode"] as! String
         if let returnUrl = params["returnUrl"] as? String {
@@ -99,6 +104,7 @@ private extension AWXPaymentIntent {
         id = params["paymentIntentId"] as! String
         amount = NSDecimalNumber(decimal: (params["amount"] as! NSNumber).decimalValue)
         currency = params["currency"] as! String
+        clientSecret = params["clientSecret"] as! String
         customerId = params["customerId"] as? String
     }
 }
