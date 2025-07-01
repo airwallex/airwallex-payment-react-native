@@ -2126,12 +2126,12 @@ __metadata:
   linkType: hard
 
 "@jridgewell/gen-mapping@npm:^0.3.5":
-  version: 0.3.10
-  resolution: "@jridgewell/gen-mapping@npm:0.3.10"
+  version: 0.3.11
+  resolution: "@jridgewell/gen-mapping@npm:0.3.11"
   dependencies:
     "@jridgewell/sourcemap-codec": ^1.5.0
     "@jridgewell/trace-mapping": ^0.3.24
-  checksum: 0cddd9adda499f1e10ce6597b4ba337b6742350fa3caf643d2d572a9d4fbf87dbf4ec0cdfc22ada11991b2ac61599a3af35ee7e9ef5d21e5a841ab71038238af
+  checksum: b1b0405f838799437f56e0a5692f06b05f26d8f2f05267c0058fede732015e69abc484f26c14b6e9bbddae24babf03fcc9440c13c16bec9ba05ace8f2da547f6
   languageName: node
   linkType: hard
 
@@ -2143,19 +2143,19 @@ __metadata:
   linkType: hard
 
 "@jridgewell/source-map@npm:^0.3.3":
-  version: 0.3.8
-  resolution: "@jridgewell/source-map@npm:0.3.8"
+  version: 0.3.9
+  resolution: "@jridgewell/source-map@npm:0.3.9"
   dependencies:
     "@jridgewell/gen-mapping": ^0.3.5
     "@jridgewell/trace-mapping": ^0.3.25
-  checksum: d43f33340c97dc6fd26ddd902cff88cfd57898ee22455532b5f9d2128c3680bd6c5ac60287cd12fd76c63d689255f342965f9069710f839cfd4094d46b91b7a4
+  checksum: 7b2e0c29d7edead843c0ba56f735748b8355fd0c441bc32ddf2b755532bb8071a7a80910c447c34aefd784cce838a7c7dd9ba292cac77e60fde0f36f6e516b94
   languageName: node
   linkType: hard
 
 "@jridgewell/sourcemap-codec@npm:^1.4.10, @jridgewell/sourcemap-codec@npm:^1.4.14, @jridgewell/sourcemap-codec@npm:^1.5.0":
-  version: 1.5.2
-  resolution: "@jridgewell/sourcemap-codec@npm:1.5.2"
-  checksum: cc346f1058b29da2ec84c7ae5aeecb8c58601c03a67bf62397ffaf13b6fcac7dc56fade0b873216400fa204a3e8b23f5f2facdea87d53250bbefd140ad08b67a
+  version: 1.5.3
+  resolution: "@jridgewell/sourcemap-codec@npm:1.5.3"
+  checksum: 6857b20f95fc215910da700bbaa6f1c1bca87accbd0f18e7a67ab22dc2bbbd3fc7db52a92890f38e8df6ccbe0eec57a72e11caa94db853b0ee71d80c9822a59e
   languageName: node
   linkType: hard
 
@@ -2170,12 +2170,12 @@ __metadata:
   linkType: hard
 
 "@jridgewell/trace-mapping@npm:^0.3.12, @jridgewell/trace-mapping@npm:^0.3.18, @jridgewell/trace-mapping@npm:^0.3.24, @jridgewell/trace-mapping@npm:^0.3.25":
-  version: 0.3.27
-  resolution: "@jridgewell/trace-mapping@npm:0.3.27"
+  version: 0.3.28
+  resolution: "@jridgewell/trace-mapping@npm:0.3.28"
   dependencies:
     "@jridgewell/resolve-uri": ^3.1.0
     "@jridgewell/sourcemap-codec": ^1.4.14
-  checksum: 7fcdee16c4da1f869ecd0a4465f28cc1eb51dbd88cbedde8ca114357f0faa03b31c7e997f5889cd061a3bab4262f616c5a915ab83d047022a87a2daf715a2069
+  checksum: a53c34565ca141b1e4a934f44bfbac9a295833cc50ef6f2a2b7e6de9684506cf0ecff4379809f91823540ba2fe957dc2deb1e513ca6048967ea4a1eeaae1789f
   languageName: node
   linkType: hard
 
@@ -2576,7 +2576,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-community/cli@npm:latest":
+"@react-native-community/cli@latest":
   version: 18.0.0
   resolution: "@react-native-community/cli@npm:18.0.0"
   dependencies:
@@ -3116,11 +3116,11 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*":
-  version: 24.0.7
-  resolution: "@types/node@npm:24.0.7"
+  version: 24.0.8
+  resolution: "@types/node@npm:24.0.8"
   dependencies:
     undici-types: ~7.8.0
-  checksum: e3986e0683cf5cf816297200deb0627e62b60d81952391ed03e292cd13463acaa0601adbce2402ecf560eac7a80bbc77f58417173cb01755a79fbed0b2165c92
+  checksum: 78a7af615a543599af1280f087c204c987a265121d656060352db0f80bc1e55c90abae1d007732db5dda19f77dfb196ed29bdc4a9966042c2d44023503fd52aa
   languageName: node
   linkType: hard
 
@@ -5496,9 +5496,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.5.173":
-  version: 1.5.177
-  resolution: "electron-to-chromium@npm:1.5.177"
-  checksum: 7e91acb949967fa607165da13595a6571468d619c50203a77d33ff63ee13efc52d2b99b3a167545195673dc385e580ee4a593d3b893650e63914a293af30b5bb
+  version: 1.5.178
+  resolution: "electron-to-chromium@npm:1.5.178"
+  checksum: 7799c7c564fbee12fa2b830e3dcac480dd61b1c3eb2e05e802e5b477a1a92c4726ca9046af597b2e8008f2661aa1ab87ca853d36da17a037d172f91dfe874746
   languageName: node
   linkType: hard
 

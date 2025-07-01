@@ -11,7 +11,8 @@
     "start": "react-native start",
     "build-demo-apk": "cd android && ./gradlew assembleDebug -Penv=demo",
     "build-staging-apk": "cd android && ./gradlew assembleDebug -Penv=staging",
-    "build-production-apk": "cd android && ./gradlew assembleDebug -Penv=production"
+    "build-production-apk": "cd android && ./gradlew assembleDebug -Penv=production",
+    "prepare": "node scripts/apply-localizations.js"
   },
   "dependencies": {
     "@react-native-picker/picker": "^2.9.0",
