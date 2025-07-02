@@ -1,7 +1,7 @@
 buildscript {
   // Buildscript is evaluated before everything else so we can't use getExtOrDefault
   def kotlin_version = rootProject.ext.has("kotlinVersion") ? rootProject.ext.get("kotlinVersion") : project.properties["AirwallexPaymentReactNative_kotlinVersion"]
-  ext.airwallex_version = "6.0.5"
+  ext.airwallex_version = "6.1.1"
 
   repositories {
     google()
