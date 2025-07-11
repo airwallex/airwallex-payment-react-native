@@ -1,7 +1,7 @@
 require "json"
 
 package = JSON.parse(File.read(File.join(__dir__, "package.json")))
-airwallex_version = '~> 6.1.4'
+airwallex_version = '~> 6.1.6'
 
 Pod::Spec.new do |s|
   s.name         = "airwallex-payment-react-native"
