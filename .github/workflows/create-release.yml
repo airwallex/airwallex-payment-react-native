@@ -8,6 +8,9 @@ on:
         required: false
         type: string
 
+permissions:
+  contents: write
+  
 jobs:
   create-release:
     runs-on: ubuntu-latest
@@ -17,7 +20,6 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #4.2.2
         with:
           fetch-depth: 0
-          token: ${{ secrets.PAT }}
 
       - name: Work out the new version via Semantic Release
         if: ${{ inputs.version == '' }}
@@ -26,8 +28,6 @@ jobs:
         with:
           branch: ${{ github.ref_name }}
           dry_run: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Apply new version to environment
         run: |
@@ -42,8 +42,6 @@ jobs:
         id: commit
         with:
           commit_message: "chore: bumped versions to ${{ env.VERSION }}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
 
       - name: Publish GitHub release
         uses: ncipollo/release-action@440c8c1cb0ed28b9f43e4d1d670870f059653174 #1.16.0
