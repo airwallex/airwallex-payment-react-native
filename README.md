@@ -3,6 +3,14 @@
 [![Version](https://img.shields.io/npm/v/airwallex-payment-react-native.svg)](https://www.npmjs.org/package/airwallex-payment-react-native)
 
 This airwallex-payment-react-native library is a lightweight React Native SDK that allows merchants to conveniently integrate the Airwallex checkout flow on their iOS/Android app.
+Payment methods supported:
+- Cards: `Visa`, `Mastercard`, `Amex`, `Dinners Club`, `JCB`, `Discover`, `Union Pay`. If you want to integrate Airwallex API without our Native UI for card payments, then your app is required to be PCI-DSS compliant. 
+- E-Wallets: `Alipay`, `AlipayHK`, `DANA`, `GCash`, `Kakao Pay`, `Touch ‘n Go`, `WeChat Pay`, etc.
+- Apple Pay
+- Google Pay
+
+Localizations supported:
+English, Chinese Simplified, Chinese Traditional, French, German, Japanese, Korean, Portuguese Portugal, Portuguese Brazil, Russian, Spanish, Thai.
 
 ## How it works
 
