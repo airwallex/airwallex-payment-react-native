@@ -28,6 +28,8 @@ jobs:
         with:
           branch: ${{ github.ref_name }}
           dry_run: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Apply new version to environment
         run: |
