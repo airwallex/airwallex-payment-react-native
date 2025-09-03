@@ -1,13 +1,13 @@
 PODS:
-  - Airwallex (6.1.8):
-    - Airwallex/AirwallexPaymentSheet (= 6.1.8)
-  - airwallex-payment-react-native (0.1.1):
-    - Airwallex (~> 6.1.8)
+  - Airwallex (6.1.9):
+    - Airwallex/AirwallexPaymentSheet (= 6.1.9)
+  - airwallex-payment-react-native (0.1.2):
+    - Airwallex (~> 6.1.9)
     - React-Core
-  - Airwallex/AirwallexCore (6.1.8)
-  - Airwallex/AirwallexPayment (6.1.8):
+  - Airwallex/AirwallexCore (6.1.9)
+  - Airwallex/AirwallexPayment (6.1.9):
     - Airwallex/AirwallexCore
-  - Airwallex/AirwallexPaymentSheet (6.1.8):
+  - Airwallex/AirwallexPaymentSheet (6.1.9):
     - Airwallex/AirwallexPayment
   - boost (1.84.0)
   - DoubleConversion (1.1.6)
@@ -1829,8 +1829,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  Airwallex: 693adfbe048b1f1891bd6314f3f9f27134558987
-  airwallex-payment-react-native: 54992c5f9b67bc466c16c5c0578579e5572d5f02
+  Airwallex: dc4dab72416421a5fdd69c88c66710943ead83ec
+  airwallex-payment-react-native: 704b223405190a8858a5d34fbd698a6f07190f51
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
