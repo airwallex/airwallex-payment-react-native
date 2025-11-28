@@ -1,0 +1,157 @@
+name: Update dependency on iOS/Android SDK release
+
+on:
+  repository_dispatch:
+    types: [ios_release, android_release]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'SDK version (e.g., 6.3.0)'
+        required: true
+        type: string
+      sdk:
+        description: 'SDK type (ios or android)'
+        required: true
+        type: choice
+        options:
+          - ios
+          - android
+
+jobs:
+  update-sdk-dependency:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        with:
+          token: ${{ secrets.PAT }}
+
+      - name: Determine SDK type and extract version
+        id: sdk_info
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            SDK_TYPE="${{ inputs.sdk }}"
+            NEW_VERSION="${{ inputs.tag }}"
+            echo "Manual trigger: SDK=$SDK_TYPE, Version=$NEW_VERSION"
+          else
+            # Determine SDK type from repository_dispatch event type
+            if [ "${{ github.event.action }}" = "ios_release" ]; then
+              SDK_TYPE="ios"
+            else
+              SDK_TYPE="android"
+            fi
+            NEW_VERSION="${{ github.event.client_payload.tag }}"
+            echo "Repository dispatch: SDK=$SDK_TYPE, Version=$NEW_VERSION"
+          fi
+
+          # Validate semver format (X.Y.Z)
+          if ! echo "$NEW_VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "Error: Invalid version format '$NEW_VERSION'. Expected semver format (e.g., 6.4.0)"
+            exit 1
+          fi
+
+          echo "sdk_type=$SDK_TYPE" >> $GITHUB_OUTPUT
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Extract current version
+        id: current_version
+        run: |
+          SDK_TYPE="${{ steps.sdk_info.outputs.sdk_type }}"
+
+          if [ "$SDK_TYPE" = "ios" ]; then
+            VERSION_FILE="airwallex-payment-react-native.podspec"
+            if [ ! -f "$VERSION_FILE" ]; then
+              echo "Error: Podspec file not found at $VERSION_FILE"
+              exit 1
+            fi
+            # Extract version from airwallex_version = '...' or airwallex_version = '~> ...'
+            CURRENT_VERSION=$(grep "airwallex_version = " "$VERSION_FILE" | sed -E "s/.*airwallex_version = '(~> )?([0-9.]+)'.*/\2/")
+          else
+            VERSION_FILE="android/build.gradle"
+            if [ ! -f "$VERSION_FILE" ]; then
+              echo "Error: build.gradle file not found at $VERSION_FILE"
+              exit 1
+            fi
+            # Extract version from ext.airwallex_version = "..."
+            CURRENT_VERSION=$(grep "ext.airwallex_version" "$VERSION_FILE" | sed -E 's/.*ext.airwallex_version = "([0-9.]+)".*/\1/')
+          fi
+
+          if [ -z "$CURRENT_VERSION" ]; then
+            echo "Error: Could not extract current version from $VERSION_FILE"
+            exit 1
+          fi
+
+          echo "Current $SDK_TYPE SDK version: $CURRENT_VERSION"
+          echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Compare versions
+        id: version_check
+        run: |
+          NEW_VERSION="${{ steps.sdk_info.outputs.version }}"
+          CURRENT_VERSION="${{ steps.current_version.outputs.version }}"
+          SDK_TYPE="${{ steps.sdk_info.outputs.sdk_type }}"
+
+          echo "Comparing $SDK_TYPE SDK versions: new=$NEW_VERSION vs current=$CURRENT_VERSION"
+
+          # Use sort -V for semantic version comparison
+          # If new version is the highest, it will be on the last line
+          HIGHEST=$(printf "%s\n%s" "$NEW_VERSION" "$CURRENT_VERSION" | sort -V | tail -n1)
+
+          if [ "$NEW_VERSION" = "$CURRENT_VERSION" ]; then
+            echo "Version already up-to-date. Skipping."
+            echo "should_update=false" >> $GITHUB_OUTPUT
+          elif [ "$HIGHEST" = "$NEW_VERSION" ]; then
+            echo "New version is newer. Proceeding with update."
+            echo "should_update=true" >> $GITHUB_OUTPUT
+          else
+            echo "New version $NEW_VERSION is not newer than current version $CURRENT_VERSION. Skipping."
+            echo "should_update=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update SDK dependency
+        if: steps.version_check.outputs.should_update == 'true'
+        run: |
+          NEW_VERSION="${{ steps.sdk_info.outputs.version }}"
+          SDK_TYPE="${{ steps.sdk_info.outputs.sdk_type }}"
+
+          if [ "$SDK_TYPE" = "ios" ]; then
+            VERSION_FILE="airwallex-payment-react-native.podspec"
+            echo "Updating $VERSION_FILE to version ~> $NEW_VERSION"
+            # Update the airwallex_version line to use pessimistic operator (~>)
+            sed -i "s/airwallex_version = '.*'/airwallex_version = '~> $NEW_VERSION'/" "$VERSION_FILE"
+            echo "Updated podspec:"
+            grep "airwallex_version" "$VERSION_FILE"
+          else
+            VERSION_FILE="android/build.gradle"
+            echo "Updating $VERSION_FILE to version $NEW_VERSION"
+            # Update ext.airwallex_version line
+            sed -i "s/ext.airwallex_version = \".*\"/ext.airwallex_version = \"$NEW_VERSION\"/" "$VERSION_FILE"
+            echo "Updated build.gradle:"
+            grep "ext.airwallex_version" "$VERSION_FILE"
+          fi
+
+      - name: Create Pull Request
+        if: steps.version_check.outputs.should_update == 'true'
+        uses: peter-evans/create-pull-request@84ae59a2cdc2258d6fa0732dd66352dddae2a412 # v7.0.9
+        with:
+          token: ${{ secrets.PAT }}
+          commit-message: "chore: update ${{ steps.sdk_info.outputs.sdk_type == 'ios' && 'iOS' || 'Android' }} SDK to ${{ steps.sdk_info.outputs.version }}"
+          branch: "update-${{ steps.sdk_info.outputs.sdk_type }}-sdk-${{ steps.sdk_info.outputs.version }}"
+          delete-branch: true
+          title: "Update ${{ steps.sdk_info.outputs.sdk_type == 'ios' && 'iOS' || 'Android' }} SDK to ${{ steps.sdk_info.outputs.version }}"
+          body: |
+            ## Summary
+            This PR updates the Airwallex ${{ steps.sdk_info.outputs.sdk_type == 'ios' && 'iOS' || 'Android' }} SDK dependency to version `${{ steps.sdk_info.outputs.version }}`.
+
+            ### Changes
+            - Updated ${{ steps.sdk_info.outputs.sdk_type == 'ios' && 'iOS' || 'Android' }} SDK dependency from `${{ steps.current_version.outputs.version }}` to `${{ steps.sdk_info.outputs.version }}`
+
+            ### Triggered By
+            Automated update from ${{ steps.sdk_info.outputs.sdk_type == 'ios' && 'iOS' || 'Android' }} SDK release `${{ steps.sdk_info.outputs.version }}`
+
+            ---
+            🤖 Generated automatically by repository dispatch event
+          base: main
+          labels: |
+            dependencies
+            automated
