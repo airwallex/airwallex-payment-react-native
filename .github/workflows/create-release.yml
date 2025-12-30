@@ -7,6 +7,14 @@ on:
         description: Next release version. If empty then use semantic release.
         required: false
         type: string
+      release_notes_source:
+        description: Source for release notes generation.
+        required: false
+        type: choice
+        default: github
+        options:
+          - github
+          - semantic-release
 
 jobs:
   create-release:
@@ -28,7 +36,7 @@ jobs:
           dry_run: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: 'dummy-token'
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Apply new version to environment
         run: |
@@ -46,10 +54,18 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
 
-      - name: Publish GitHub release
+      - name: Publish GitHub release (with GitHub generated notes)
+        if: ${{ inputs.release_notes_source == 'github' }}
+        uses: ncipollo/release-action@440c8c1cb0ed28b9f43e4d1d670870f059653174 #1.16.0
+        with:
+          generateReleaseNotes: true
+          commit: ${{ steps.commit.outputs.commit_hash }}
+          tag: ${{ env.VERSION }}
+
+      - name: Publish GitHub release (with semantic release notes)
+        if: ${{ inputs.release_notes_source == 'semantic-release' }}
         uses: ncipollo/release-action@440c8c1cb0ed28b9f43e4d1d670870f059653174 #1.16.0
         with:
           body: ${{ steps.semantic.outputs.new_release_notes }}
-          generateReleaseNotes: ${{ steps.semantic.outcome != 'success' }}
           commit: ${{ steps.commit.outputs.commit_hash }}
           tag: ${{ env.VERSION }}
