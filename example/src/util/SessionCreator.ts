@@ -217,13 +217,13 @@ class SessionCreator {
     return {
       firstName: 'John',
       lastName: 'Doe',
-      phoneNumber: '123-456-7890',
+      phoneNumber: '+1234567890',
       shippingMethod: 'Standard',
       email: 'john.doe@example.com',
       dateOfBirth: '2000-01-01',
       address: {
         city: 'Example City',
-        countryCode: 'UK',
+        countryCode: 'GB',
         street: '123 Example Street',
         postcode: '12345',
         state: 'Example State',

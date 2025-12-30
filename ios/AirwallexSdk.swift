@@ -6,10 +6,7 @@ class AirwallexSdk: RCTEventEmitter {
     private var resolve: RCTPromiseResolveBlock?
     private var reject: RCTPromiseRejectBlock?
     private var paymentConsentID: String?
-    private var applePayProvider: AWXApplePayProvider?
-    private var cardProvider: AWXCardProvider?
-    private var cardSession: AWXSession?
-    private var hostVC: UIViewController?
+    private var paymentSessionHandler: PaymentSessionHandler?
     
     @objc(initialize:enableLogging:saveLogToLocal:)
     func initialize(environment: String, enableLogging: Bool, saveLogToLocal: Bool) {
@@ -61,58 +58,77 @@ class AirwallexSdk: RCTEventEmitter {
     func startApplePay(session: NSDictionary, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
         self.resolve = resolve
         self.reject = reject
-        
+
         AWXAPIClientConfiguration.shared().clientSecret = session["clientSecret"] as? String
-        
+
         let session = buildAirwallexSession(from: session)
-        
-        let applePayProvider = AWXApplePayProvider(delegate: self, session: session)
+
         DispatchQueue.main.async {
-            applePayProvider.startPayment()
+            let handler = PaymentSessionHandler(
+                session: session,
+                viewController: self.getViewController(),
+                paymentResultDelegate: self
+            )
+            handler.showIndicator = false
+            handler.startApplePay()
+            self.paymentSessionHandler = handler
         }
-        self.applePayProvider = applePayProvider
     }
 
     @objc(payWithCardDetails:card:saveCard:resolver:rejecter:)
     func payWithCardDetails(session: NSDictionary, card: NSDictionary, saveCard: Bool, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
         self.resolve = resolve
         self.reject = reject
-        
+
         AWXAPIClientConfiguration.shared().clientSecret = session["clientSecret"] as? String
-        
+
         let session = buildAirwallexSession(from: session)
         let card = AWXCard.decode(fromJSON: card as? [AnyHashable : Any]) as! AWXCard
-        
-        let cardProvider = AWXCardProvider(delegate: self, session: session)
+
         DispatchQueue.main.async {
-            self.hostVC = self.getViewController()
-            cardProvider.confirmPaymentIntent(with: card, billing: nil, saveCard: saveCard)
+            let handler = PaymentSessionHandler(
+                session: session,
+                viewController: self.getViewController(),
+                paymentResultDelegate: self
+            )
+            handler.showIndicator = false
+            handler.startCardPayment(with: card, billing: session.billing, saveCard: saveCard)
+            self.paymentSessionHandler = handler
         }
-        self.cardSession = session
-        self.cardProvider = cardProvider
     }
-    
+
     @objc(payWithConsent:consent:resolver:rejecter:)
     func payWithConsent(session: NSDictionary, consent: NSDictionary, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
         self.resolve = resolve
         self.reject = reject
-        
+
         AWXAPIClientConfiguration.shared().clientSecret = session["clientSecret"] as? String
-        
+
         let session = buildAirwallexSession(from: session)
         let consent = AWXPaymentConsent.decode(fromJSON: consent as? [AnyHashable : Any]) as! AWXPaymentConsent
-        
-        let cardProvider = AWXCardProvider(delegate: self, session: session)
+
         DispatchQueue.main.async {
-            self.hostVC = self.getViewController()
-            cardProvider.confirmPaymentIntent(with: consent)
+            let handler = PaymentSessionHandler(
+                session: session,
+                viewController: self.getViewController(),
+                paymentResultDelegate: self
+            )
+            handler.showIndicator = false
+            handler.startConsentPayment(with: consent)
+            self.paymentSessionHandler = handler
         }
-        self.cardProvider = cardProvider
     }
 
     private func getViewController() -> UIViewController {
-        var presentingViewController = UIApplication.shared.delegate?.window??.rootViewController
-        
+        let windowScene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
+        let keyWindow: UIWindow?
+        if #available(iOS 15.0, *) {
+            keyWindow = windowScene?.keyWindow
+        } else {
+            keyWindow = windowScene?.windows.first(where: { $0.isKeyWindow })
+        }
+
+        var presentingViewController = keyWindow?.rootViewController
         while let presented = presentingViewController?.presentedViewController {
             presentingViewController = presented
         }
@@ -123,43 +139,6 @@ class AirwallexSdk: RCTEventEmitter {
 
 extension AirwallexSdk: AWXPaymentResultDelegate {
     func paymentViewController(_ controller: UIViewController?, didCompleteWith status: AirwallexPaymentStatus, error: Error?) {
-        controller?.dismiss(animated: true) {
-            switch status {
-            case .success:
-                var successDict = ["status": "success"]
-                if let consentID = self.paymentConsentID {
-                    successDict["paymentConsentId"] = consentID
-                }
-                self.resolve?(successDict)
-            case .inProgress:
-                self.resolve?(["status": "inProgress"])
-            case .failure:
-                self.reject?((String((error as? NSError)?.code ?? -1)), error?.localizedDescription, error)
-            case .cancel:
-                self.resolve?(["status": "cancelled"])
-            }
-            self.resolve = nil
-            self.reject = nil
-        }
-    }
-  
-    func paymentViewController(_ controller: UIViewController?, didCompleteWithPaymentConsentId paymentConsentId: String) {
-        self.paymentConsentID = paymentConsentId
-    }
-}
-
-extension AirwallexSdk: AWXProviderDelegate {
-    func providerDidStartRequest(_ provider: AWXDefaultProvider) {
-    }
-    
-    func providerDidEndRequest(_ provider: AWXDefaultProvider) {
-    }
-    
-    func provider(_ provider: AWXDefaultProvider, didInitializePaymentIntentId paymentIntentId: String) {
-        cardSession?.updateInitialPaymentIntentId(paymentIntentId)
-    }
-
-    func provider(_ provider: AWXDefaultProvider, didCompleteWith status: AirwallexPaymentStatus, error: (any Error)?) {
         switch status {
         case .success:
             var successDict = ["status": "success"]
@@ -177,18 +156,11 @@ extension AirwallexSdk: AWXProviderDelegate {
         resolve = nil
         reject = nil
         paymentConsentID = nil
-        applePayProvider = nil
-        cardProvider = nil
-        cardSession = nil
-        hostVC = nil
+        paymentSessionHandler = nil
     }
-    
-    func provider(_ provider: AWXDefaultProvider, didCompleteWithPaymentConsentId paymentConsentId: String) {
+
+    func paymentViewController(_ controller: UIViewController?, didCompleteWithPaymentConsentId paymentConsentId: String) {
         self.paymentConsentID = paymentConsentId
-    }
-    
-    func hostViewController() -> UIViewController {
-        hostVC ?? getViewController()
     }
 }
 
