@@ -9,6 +9,9 @@ export const initialize = (
   enableLogging: boolean = true,
   saveLogToLocal: boolean = false
 ) => {
+  if (enableLogging) {
+    console.log(`[AirwallexSdk] Current connected environment: ${environment}`);
+  }
   return NativeAirwallexSdk.initialize(
     environment,
     enableLogging,
