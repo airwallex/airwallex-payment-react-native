@@ -28,7 +28,7 @@ jobs:
           token: ${{ secrets.PAT }}
 
       - name: Work out the new version via Semantic Release
-        if: ${{ inputs.version == '' }}
+        if: ${{ inputs.version == '' || inputs.release_notes_source == 'semantic-release' }}
         uses: cycjimmy/semantic-release-action@8e58d20d0f6c8773181f43eb74d6a05e3099571d #3.4.2
         id: semantic
         with:
