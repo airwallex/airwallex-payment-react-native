@@ -120,20 +120,16 @@ class AirwallexSdk: RCTEventEmitter {
     }
 
     private func getViewController() -> UIViewController {
-        let windowScene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
-        let keyWindow: UIWindow?
-        if #available(iOS 15.0, *) {
-            keyWindow = windowScene?.keyWindow
-        } else {
-            keyWindow = windowScene?.windows.first(where: { $0.isKeyWindow })
-        }
+        let window = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap { $0.windows }
+            .first { $0.isKeyWindow }
 
-        var presentingViewController = keyWindow?.rootViewController
-        while let presented = presentingViewController?.presentedViewController {
-            presentingViewController = presented
+        var vc = window?.rootViewController
+        while let presented = vc?.presentedViewController {
+            vc = presented
         }
-
-        return presentingViewController ?? UIViewController()
+        return vc ?? UIViewController()
     }
 }
 
