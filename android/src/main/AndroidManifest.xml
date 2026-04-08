@@ -7,7 +7,7 @@
   <application>
     <provider
       android:name=".AirwallexPaymentInitProvider"
-      android:authorities="com.airwallexpaymentreactnative.provider"
+      android:authorities="${applicationId}.airwallexpaymentreactnative.provider"
       android:exported="false" />
   </application>
 
