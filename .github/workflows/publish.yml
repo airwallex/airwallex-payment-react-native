@@ -1,10 +1,9 @@
 name: Push release to NPM
 
 on:
+  release:
+    types: [published]
   workflow_dispatch:
-  push:
-    tags:
-      - '*'
 
 jobs:
   publish-npm:
