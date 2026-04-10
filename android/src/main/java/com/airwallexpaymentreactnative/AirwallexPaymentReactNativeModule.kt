@@ -11,6 +11,7 @@ import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.Environment
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.googlepay.GooglePayComponent
 import com.airwallex.android.redirect.RedirectComponent
@@ -70,6 +71,8 @@ class AirwallexPaymentReactNativeModule(private val reactContext: ReactApplicati
               )
               .build()
           )
+          AnalyticsLogger.initialize(application)
+          AnalyticsLogger.updateExtraCommonData(mapOf("framework" to "rn"))
           promise.resolve(null)
         }
       } ?: run {
