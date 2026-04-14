@@ -9,6 +9,9 @@ import Airwallex
 
 extension AirwallexSdk {
     internal func buildAirwallexSession(from params: NSDictionary) -> AWXSession {
+        if let customerId = params["customerId"] as? String {
+            assert(!customerId.isEmpty, "customerId must not be an empty string")
+        }
         let type = params["type"] as! String
         return switch type {
         case "OneOff":

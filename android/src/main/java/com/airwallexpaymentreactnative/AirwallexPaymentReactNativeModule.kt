@@ -291,6 +291,8 @@ class AirwallexPaymentReactNativeModule(private val reactContext: ReactApplicati
   }
 
   private fun parseSessionFromMap(sessionMap: ReadableMap): AirwallexSession {
+    val customerId = sessionMap.getStringOrNull("customerId")
+    assert(customerId != "") { "customerId must not be an empty string" }
     val type = sessionMap.getStringOrNull("type") ?: error("type is required")
     return when (type) {
       "OneOff" -> {
