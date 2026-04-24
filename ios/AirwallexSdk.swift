@@ -14,6 +14,7 @@ class AirwallexSdk: RCTEventEmitter {
             Airwallex.setMode(mode)
             AWXAPIClientConfiguration.shared()
         }
+        AnalyticsLogger.shared().bindExtraCommonData(["framework": "rn"])
     }
   
     @objc(presentEntirePaymentFlow:resolver:rejecter:)
