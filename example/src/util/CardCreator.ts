@@ -9,7 +9,7 @@ class CardCreator {
       cvc: '737',
     };
 
-    if (environment === 'demo') {
+    if (environment === 'demo' || environment === 'preview') {
       return {
         number: '4012000300001003',
         ...card,
