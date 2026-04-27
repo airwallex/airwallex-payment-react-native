@@ -1,3 +1,4 @@
+import { version } from '../package.json';
 import { transformKeysToSnakeCase } from './helpers';
 import NativeAirwallexSdk from './NativeAirwallexSdk';
 import type { PaymentConsent, PaymentSession } from './types';
@@ -15,7 +16,8 @@ export const initialize = (
   return NativeAirwallexSdk.initialize(
     environment,
     enableLogging,
-    saveLogToLocal
+    saveLogToLocal,
+    version
   );
 };
 

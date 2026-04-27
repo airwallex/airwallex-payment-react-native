@@ -7,7 +7,8 @@ type NativeAirwallexSdkType = {
   initialize(
     environment: 'staging' | 'demo' | 'production',
     enableLogging: boolean,
-    saveLogToLocal: boolean
+    saveLogToLocal: boolean,
+    frameworkVersion: string
   ): void;
 
   presentEntirePaymentFlow(session: PaymentSession): Promise<PaymentResult>;

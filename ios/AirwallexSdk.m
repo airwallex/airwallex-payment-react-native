@@ -7,6 +7,7 @@ RCT_EXTERN_METHOD(
                   initialize:(NSString *)environment
                   enableLogging:(BOOL)enableLogging
                   saveLogToLocal:(BOOL)saveLogToLocal
+                  frameworkVersion:(NSString *)frameworkVersion
                   )
 
 RCT_EXTERN_METHOD(
