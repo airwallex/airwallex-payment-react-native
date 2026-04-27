@@ -8,13 +8,13 @@ class AirwallexSdk: RCTEventEmitter {
     private var paymentConsentID: String?
     private var paymentSessionHandler: PaymentSessionHandler?
     
-    @objc(initialize:enableLogging:saveLogToLocal:)
-    func initialize(environment: String, enableLogging: Bool, saveLogToLocal: Bool) {
+    @objc(initialize:enableLogging:saveLogToLocal:frameworkVersion:)
+    func initialize(environment: String, enableLogging: Bool, saveLogToLocal: Bool, frameworkVersion: String) {
         if let mode = AirwallexSDKMode.from(environment) {
             Airwallex.setMode(mode)
             AWXAPIClientConfiguration.shared()
         }
-        AnalyticsLogger.shared().bindExtraCommonData(["framework": "rn"])
+        AnalyticsLogger.shared().bindExtraCommonData(["framework": "rn", "frameworkVersion": frameworkVersion])
     }
   
     @objc(presentEntirePaymentFlow:resolver:rejecter:)

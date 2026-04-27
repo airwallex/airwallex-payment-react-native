@@ -49,6 +49,7 @@ class AirwallexPaymentReactNativeModule(private val reactContext: ReactApplicati
     environment: String,
     enableLogging: Boolean,
     saveLogToLocal: Boolean,
+    frameworkVersion: String,
     promise: Promise
   ) {
     try {
@@ -72,7 +73,7 @@ class AirwallexPaymentReactNativeModule(private val reactContext: ReactApplicati
               .build()
           )
           AnalyticsLogger.initialize(application)
-          AnalyticsLogger.updateExtraCommonData(mapOf("framework" to "rn"))
+          AnalyticsLogger.updateExtraCommonData(mapOf("framework" to "rn", "frameworkVersion" to frameworkVersion))
           promise.resolve(null)
         }
       } ?: run {
