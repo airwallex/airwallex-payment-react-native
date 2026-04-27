@@ -12,7 +12,7 @@ class PaymentService {
   private clientId: string;
 
   constructor(
-    environment: 'staging' | 'demo' | 'production' = 'demo',
+    environment: 'staging' | 'demo' | 'production' | 'preview' = 'demo',
     apiKey: string,
     clientId: string
   ) {
@@ -121,13 +121,15 @@ class PaymentService {
   }
 
   getBaseUrlForEnvironment(
-    environment: 'staging' | 'demo' | 'production'
+    environment: 'staging' | 'demo' | 'production' | 'preview'
   ): string {
     switch (environment) {
       case 'demo':
         return 'https://demo-pacheckoutdemo.airwallex.com';
       case 'staging':
         return 'https://staging-pacheckoutdemo.airwallex.com';
+      case 'preview':
+        return 'https://pacheckoutdemo.sandbox.airwallex.com';
       default:
         return '';
     }
