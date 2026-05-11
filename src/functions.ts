@@ -5,7 +5,7 @@ import type { Card } from './types/Card';
 import type { PaymentResult } from './types/PaymentResult';
 
 export const initialize = (
-  environment: 'staging' | 'demo' | 'production' = 'production',
+  environment: 'staging' | 'demo' | 'production' | 'preview' = 'production',
   enableLogging: boolean = true,
   saveLogToLocal: boolean = false
 ) => {

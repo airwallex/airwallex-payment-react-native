@@ -169,6 +169,8 @@ private extension AirwallexSDKMode {
             .demoMode
         case "production":
             .productionMode
+        case "preview":
+            .previewMode
         default:
             nil
         }

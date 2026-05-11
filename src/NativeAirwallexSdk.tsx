@@ -5,7 +5,7 @@ import type { Card } from './types/Card';
 
 type NativeAirwallexSdkType = {
   initialize(
-    environment: 'staging' | 'demo' | 'production',
+    environment: 'staging' | 'demo' | 'production' | 'preview',
     enableLogging: boolean,
     saveLogToLocal: boolean
   ): void;

@@ -6,6 +6,7 @@ import {
   Text,
   ActivityIndicator,
   Platform,
+  SafeAreaView,
 } from 'react-native';
 import {
   initialize,
@@ -17,37 +18,122 @@ import {
   startGooglePay,
   type PaymentSession,
 } from 'airwallex-payment-react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import RNRestart from 'react-native-restart';
+import ExitApp from 'react-native-exit-app';
+import {
+  ActionSheetProvider,
+  useActionSheet,
+} from '@expo/react-native-action-sheet';
 import PaymentService from './api/PaymentService';
 import SessionCreator from './util/SessionCreator';
 import CardCreator from './util/CardCreator';
 import type { PaymentResult } from '../../src/types/PaymentResult';
 import { useEffect, useState } from 'react';
-import RNPickerSelect from 'react-native-picker-select';
+
 import PaymentConsentCreator from './util/PaymentConsentCreator';
 
-type Environment = 'staging' | 'demo';
+type Environment = 'staging' | 'demo' | 'preview';
+type PaymentMode = 'oneOff' | 'recurring' | 'recurringAndPayment';
+
+const ENV_STORAGE_KEY = 'selected_environment';
+const DEFAULT_ENV: Environment = 'demo';
+
+const ENV_OPTIONS: { label: string; value: Environment }[] = [
+  { label: 'Demo', value: 'demo' },
+  { label: 'Staging', value: 'staging' },
+  { label: 'Preview', value: 'preview' },
+];
+
+const PAYMENT_MODE_OPTIONS: { label: string; value: PaymentMode }[] = [
+  { label: 'One Off', value: 'oneOff' },
+  { label: 'Recurring', value: 'recurring' },
+  { label: 'Recurring and Payment', value: 'recurringAndPayment' },
+];
 
 export default function App() {
-  const [loading, setLoading] = useState(false);
-  const [paymentMode, setPaymentMode] = useState('oneOff');
-  const [environment, setEnvironment] = useState<Environment>('demo');
-  const [paymentService, setPaymentService] = useState(
-    new PaymentService(environment, '', '')
+  return (
+    <ActionSheetProvider>
+      <Main />
+    </ActionSheetProvider>
   );
+}
+
+function Main() {
+  const { showActionSheetWithOptions } = useActionSheet();
+  const [loading, setLoading] = useState(false);
+  const [paymentMode, setPaymentMode] = useState<PaymentMode>('oneOff');
+  const [environment, setEnvironment] = useState<Environment>(DEFAULT_ENV);
+  const [paymentService, setPaymentService] = useState(
+    new PaymentService(DEFAULT_ENV, '', '')
+  );
+  const [sdkReady, setSdkReady] = useState(false);
 
   useEffect(() => {
-    setPaymentService(new PaymentService(environment, '', ''));
-    const initializeSdk = (env: Environment) => {
-      try {
-        initialize(env, true, false);
-        console.log('SDK initialized successfully');
-      } catch (error) {
-        console.error('Error initializing SDK:', error);
-        Alert.alert('Error', 'Failed to initialize SDK.');
+    AsyncStorage.getItem(ENV_STORAGE_KEY).then((stored) => {
+      const env = ENV_OPTIONS.some((o) => o.value === stored)
+        ? (stored as Environment)
+        : DEFAULT_ENV;
+      setEnvironment(env);
+      setPaymentService(new PaymentService(env, '', ''));
+      initialize(env, true, false);
+      console.log('SDK initialized with environment:', env);
+      setSdkReady(true);
+    });
+  }, []);
+
+  const handleEnvironmentChange = async (newEnv: Environment) => {
+    if (newEnv === environment) return;
+    await AsyncStorage.setItem(ENV_STORAGE_KEY, newEnv);
+    Alert.alert(
+      'Restart Required',
+      'The app needs to restart for the new environment to take effect.',
+      [
+        {
+          text: 'OK',
+          onPress: () =>
+            Platform.OS === 'ios' ? ExitApp.exitApp() : RNRestart.restart(),
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  const showEnvironmentSheet = () => {
+    const labels = [...ENV_OPTIONS.map((o) => o.label), 'Cancel'];
+    showActionSheetWithOptions(
+      {
+        title: 'Select Environment',
+        options: labels,
+        cancelButtonIndex: labels.length - 1,
+      },
+      (selectedIndex) => {
+        if (selectedIndex == null || selectedIndex === labels.length - 1)
+          return;
+        handleEnvironmentChange(ENV_OPTIONS[selectedIndex]!.value);
       }
-    };
-    initializeSdk(environment);
-  }, [environment]);
+    );
+  };
+
+  const showPaymentModeSheet = () => {
+    const labels = [...PAYMENT_MODE_OPTIONS.map((o) => o.label), 'Cancel'];
+    showActionSheetWithOptions(
+      {
+        title: 'Payment Mode',
+        options: labels,
+        cancelButtonIndex: labels.length - 1,
+      },
+      (selectedIndex) => {
+        if (selectedIndex == null || selectedIndex === labels.length - 1)
+          return;
+        setPaymentMode(PAYMENT_MODE_OPTIONS[selectedIndex]!.value);
+      }
+    );
+  };
+
+  const paymentModeLabel =
+    PAYMENT_MODE_OPTIONS.find((o) => o.value === paymentMode)?.label ??
+    'Payment Mode';
 
   async function fetchSession(requireCustomerId = false) {
     setLoading(true);
@@ -168,23 +254,24 @@ export default function App() {
     }
   };
 
+  if (!sdkReady) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#007BFF" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      <View style={styles.topBar}>
-        <RNPickerSelect
-          onValueChange={setEnvironment}
-          items={[
-            { label: 'Demo', value: 'demo' },
-            { label: 'Staging', value: 'staging' },
-          ]}
-          value={environment}
-          placeholder={{}}
-          style={{
-            inputIOS: styles.environmentPicker,
-            inputAndroid: styles.environmentPicker,
-          }}
-        />
-      </View>
+      <SafeAreaView style={styles.topBar}>
+        <TouchableOpacity
+          style={styles.environmentPicker}
+          onPress={showEnvironmentSheet}
+        >
+          <Text style={styles.environmentPickerText}>{environment}</Text>
+        </TouchableOpacity>
+      </SafeAreaView>
       {loading && (
         <ActivityIndicator
           size="large"
@@ -192,24 +279,9 @@ export default function App() {
           style={styles.loading}
         />
       )}
-      <RNPickerSelect
-        onValueChange={(value) => setPaymentMode(value)}
-        items={[
-          { label: 'One Off', value: 'oneOff' },
-          { label: 'Recurring', value: 'recurring' },
-          { label: 'Recurring and Payment', value: 'recurringAndPayment' },
-        ]}
-        value={paymentMode}
-        placeholder={{
-          label: 'Payment Mode',
-          value: null,
-          color: '#007BFF',
-        }}
-        style={{
-          inputIOS: styles.picker,
-          inputAndroid: styles.picker,
-        }}
-      />
+      <TouchableOpacity style={styles.picker} onPress={showPaymentModeSheet}>
+        <Text style={styles.pickerText}>{paymentModeLabel}</Text>
+      </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
@@ -280,15 +352,18 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   environmentPicker: {
-    fontSize: 14,
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderWidth: 1,
     borderColor: 'gray',
     borderRadius: 4,
     backgroundColor: 'white',
+    width: 100,
+    alignItems: 'center',
+  },
+  environmentPickerText: {
+    fontSize: 14,
     color: 'black',
-    width: 150,
   },
   button: {
     marginVertical: 10,
@@ -309,15 +384,18 @@ const styles = StyleSheet.create({
     transform: [{ translateX: -25 }, { translateY: -25 }],
   },
   picker: {
-    fontSize: 16,
     paddingVertical: 12,
     paddingHorizontal: 10,
     borderWidth: 1,
     borderColor: 'gray',
     borderRadius: 4,
-    color: 'black',
     width: '80%',
     alignSelf: 'center',
     marginBottom: 20,
+    alignItems: 'center',
+  },
+  pickerText: {
+    fontSize: 16,
+    color: 'black',
   },
 });
