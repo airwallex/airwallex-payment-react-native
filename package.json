@@ -41,7 +41,7 @@
     "typecheck": "tsc",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
-    "prepare": "bob build",
+    "prepare": "node scripts/generate-version.js && bob build",
     "release": "release-it"
   },
   "keywords": [

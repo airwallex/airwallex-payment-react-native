@@ -1,4 +1,4 @@
-import { version } from '../package.json';
+import { version } from './version';
 import { transformKeysToSnakeCase } from './helpers';
 import NativeAirwallexSdk from './NativeAirwallexSdk';
 import type { PaymentConsent, PaymentSession } from './types';
