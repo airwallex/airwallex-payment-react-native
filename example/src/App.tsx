@@ -289,7 +289,19 @@ function Main() {
           handlePaymentFlowPress(presentEntirePaymentFlow);
         }}
       >
-        <Text style={styles.buttonText}>PresentEntirePaymentFlow</Text>
+        <Text style={styles.buttonText}>PresentEntirePaymentFlow (tab)</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
+          handlePaymentFlowPress((session) =>
+            presentEntirePaymentFlow(session, { layout: 'accordion' })
+          );
+        }}
+      >
+        <Text style={styles.buttonText}>
+          PresentEntirePaymentFlow (accordion)
+        </Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
