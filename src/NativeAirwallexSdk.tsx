@@ -1,5 +1,9 @@
 import { NativeModules } from 'react-native';
-import type { PaymentConsent, PaymentSession } from './types';
+import type {
+  PaymentConsent,
+  PaymentSession,
+  PaymentSheetConfiguration,
+} from './types';
 import type { PaymentResult } from './types/PaymentResult';
 import type { Card } from './types/Card';
 
@@ -11,7 +15,10 @@ type NativeAirwallexSdkType = {
     frameworkVersion: string
   ): void;
 
-  presentEntirePaymentFlow(session: PaymentSession): Promise<PaymentResult>;
+  presentEntirePaymentFlow(
+    session: PaymentSession,
+    configuration?: PaymentSheetConfiguration
+  ): Promise<PaymentResult>;
 
   presentCardPaymentFlow(session: PaymentSession): Promise<PaymentResult>;
 

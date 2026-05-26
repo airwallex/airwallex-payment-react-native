@@ -21,6 +21,7 @@ import com.airwallexpaymentreactnative.util.AirwallexRecurringSessionConverter
 import com.airwallexpaymentreactnative.util.AirwallexRecurringWithIntentSessionConverter
 import com.airwallexpaymentreactnative.util.PaymentCardConverter
 import com.airwallexpaymentreactnative.util.PaymentConsentConverter
+import com.airwallexpaymentreactnative.util.PaymentSheetConfigurationConverter
 import com.airwallexpaymentreactnative.util.getStringOrNull
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
@@ -85,13 +86,19 @@ class AirwallexPaymentReactNativeModule(private val reactContext: ReactApplicati
   }
 
   @ReactMethod
-  fun presentEntirePaymentFlow(session: ReadableMap, promise: Promise) {
+  fun presentEntirePaymentFlow(
+    session: ReadableMap,
+    configuration: ReadableMap?,
+    promise: Promise
+  ) {
     val currentActivity = requireComponentActivity(promise) ?: return
     try {
       val paymentSession = parseSessionFromMap(session)
+      val sheetConfiguration = PaymentSheetConfigurationConverter.fromReadableMap(configuration)
       AirwallexStarter.presentEntirePaymentFlow(
         currentActivity,
         paymentSession,
+        configuration = sheetConfiguration,
         paymentResultListener = object : Airwallex.PaymentResultListener {
           override fun onCompleted(status: AirwallexPaymentStatus) {
             when (status) {

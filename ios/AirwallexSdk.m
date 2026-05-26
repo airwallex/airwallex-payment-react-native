@@ -12,6 +12,7 @@ RCT_EXTERN_METHOD(
 
 RCT_EXTERN_METHOD(
                   presentEntirePaymentFlow:(NSDictionary *)session
+                  configuration:(NSDictionary *)configuration
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject
                   )

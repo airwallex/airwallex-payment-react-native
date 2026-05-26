@@ -6,4 +6,13 @@ require "#{ws_dir}/node_modules/react-native-test-app/test_app.rb"
 
 workspace 'AirwallexPaymentReactNativeExample.xcworkspace'
 
-use_test_app!
+use_test_app!(
+  :post_install => ->(installer) {
+    installer.pods_project.targets.each do |target|
+      next unless target.name == 'fmt'
+      target.build_configurations.each do |config|
+        config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'gnu++17'
+      end
+    end
+  }
+)

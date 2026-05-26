@@ -17,21 +17,23 @@ class AirwallexSdk: RCTEventEmitter {
         AnalyticsLogger.shared().bindExtraCommonData(["framework": "rn", "frameworkVersion": frameworkVersion])
     }
   
-    @objc(presentEntirePaymentFlow:resolver:rejecter:)
-    func presentEntirePaymentFlow(session: NSDictionary, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+    @objc(presentEntirePaymentFlow:configuration:resolver:rejecter:)
+    func presentEntirePaymentFlow(session: NSDictionary, configuration: NSDictionary?, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
         self.resolve = resolve
         self.reject = reject
-        
+
         AWXAPIClientConfiguration.shared().clientSecret = session["clientSecret"] as? String
-        
+
         let session = buildAirwallexSession(from: session)
-        
+        let sheetConfiguration = AWXUIContext.Configuration(params: configuration)
+        sheetConfiguration.launchStyle = .present
+
         DispatchQueue.main.async {
             AWXUIContext.launchPayment(
                 from: self.getViewController(),
                 session: session,
                 paymentResultDelegate: self,
-                launchStyle: .present
+                configuration: sheetConfiguration
             )
         }
     }

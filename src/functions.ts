@@ -1,7 +1,11 @@
 import { version } from './version';
 import { transformKeysToSnakeCase } from './helpers';
 import NativeAirwallexSdk from './NativeAirwallexSdk';
-import type { PaymentConsent, PaymentSession } from './types';
+import type {
+  PaymentConsent,
+  PaymentSession,
+  PaymentSheetConfiguration,
+} from './types';
 import type { Card } from './types/Card';
 import type { PaymentResult } from './types/PaymentResult';
 
@@ -22,9 +26,10 @@ export const initialize = (
 };
 
 export const presentEntirePaymentFlow = async (
-  session: PaymentSession
+  session: PaymentSession,
+  configuration?: PaymentSheetConfiguration
 ): Promise<PaymentResult> => {
-  return NativeAirwallexSdk.presentEntirePaymentFlow(session);
+  return NativeAirwallexSdk.presentEntirePaymentFlow(session, configuration);
 };
 
 export const presentCardPaymentFlow = async (
