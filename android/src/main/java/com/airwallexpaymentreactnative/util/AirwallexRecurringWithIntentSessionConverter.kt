@@ -69,6 +69,7 @@ object AirwallexRecurringWithIntentSessionConverter {
       .setRequireEmail(isEmailRequired)
       .setReturnUrl(returnUrl)
       .setAutoCapture(autoCapture)
+      .setShipping(shipping)
 
     merchantTriggerReason?.let {
       sessionBuilder.setMerchantTriggerReason(merchantTriggerReason)
