@@ -1,3 +1,7 @@
+/**
+ * Customer shipping (and billing, when reused via `PaymentMethod.billing`) details
+ * pre-filled into the payment sheet.
+ */
 export interface Shipping {
   firstName?: string;
   lastName?: string;

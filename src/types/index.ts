@@ -4,3 +4,5 @@ export * from './Shipping';
 export * from './ApplePayOptions';
 export * from './GooglePayOptions';
 export * from './PaymentSheetConfiguration';
+export * from './Card';
+export * from './PaymentResult';

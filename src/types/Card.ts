@@ -1,3 +1,11 @@
+/**
+ * Card details. When used as input to {@link payWithCardDetails}, the merchant
+ * supplies `number`, `expiryMonth`, `expiryYear`, `cvc`, and optionally `name`.
+ *
+ * The remaining fields (`bin`, `last4`, `brand`, `fingerprint`, `cvcCheck`,
+ * `avsCheck`, etc.) are populated by Airwallex when a Card is returned as part of
+ * a saved payment method on a {@link PaymentConsent}.
+ */
 export interface Card {
   cvc?: string;
   expiryMonth?: string;
