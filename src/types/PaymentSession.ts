@@ -18,6 +18,9 @@ interface BaseSession {
   clientSecret: string;
 }
 
+/**
+ * A single (non-recurring) payment against a payment intent.
+ */
 export interface OneOffSession extends BaseSession {
   type: 'OneOff';
   paymentIntentId: string;
@@ -25,6 +28,10 @@ export interface OneOffSession extends BaseSession {
   hidePaymentConsents?: boolean;
 }
 
+/**
+ * A session that sets up a payment consent for future recurring charges
+ * without charging the customer right now.
+ */
 export interface RecurringSession extends BaseSession {
   type: 'Recurring';
   customerId: string;
@@ -32,6 +39,10 @@ export interface RecurringSession extends BaseSession {
   merchantTriggerReason: MerchantTriggerReason;
 }
 
+/**
+ * A session that charges a payment intent now and sets up a payment consent
+ * for future recurring charges in a single step.
+ */
 export interface RecurringWithIntentSession extends BaseSession {
   type: 'RecurringWithIntent';
   customerId: string;
@@ -41,6 +52,16 @@ export interface RecurringWithIntentSession extends BaseSession {
   merchantTriggerReason: MerchantTriggerReason;
 }
 
+/**
+ * The configuration object passed to every payment flow function. It bundles the
+ * authentication (`clientSecret`), amount and currency, customer details, and
+ * optional wallet configuration into a single value.
+ *
+ * Pick a variant based on what the merchant wants to do:
+ * - {@link OneOffSession} — charge the customer once.
+ * - {@link RecurringSession} — save a payment method for future recurring charges, without charging now.
+ * - {@link RecurringWithIntentSession} — charge now AND save the payment method for future recurring charges.
+ */
 export type PaymentSession =
   | OneOffSession
   | RecurringSession

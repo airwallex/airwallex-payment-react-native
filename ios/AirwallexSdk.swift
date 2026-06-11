@@ -12,6 +12,11 @@ class AirwallexSdk: RCTEventEmitter {
     func initialize(environment: String, enableLogging: Bool, saveLogToLocal: Bool, frameworkVersion: String) {
         if let mode = AirwallexSDKMode.from(environment) {
             Airwallex.setMode(mode)
+            if saveLogToLocal {
+                Airwallex.enableLocalLogFile()
+            } else {
+                Airwallex.disableLocalLogFile()
+            }
             AWXAPIClientConfiguration.shared()
         }
         AnalyticsLogger.shared().bindExtraCommonData(["framework": "rn", "frameworkVersion": frameworkVersion])
