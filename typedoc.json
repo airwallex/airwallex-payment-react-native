@@ -1,0 +1,17 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["src/index.tsx"],
+  "out": "docs",
+  "tsconfig": "tsconfig.json",
+  "readme": "README.md",
+  "name": "airwallex-payment-react-native",
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "excludeExternals": true,
+  "includeVersion": true,
+  "hideGenerator": true,
+  "navigationLinks": {
+    "GitHub": "https://github.com/airwallex/airwallex-payment-react-native",
+    "npm": "https://www.npmjs.com/package/airwallex-payment-react-native"
+  }
+}
