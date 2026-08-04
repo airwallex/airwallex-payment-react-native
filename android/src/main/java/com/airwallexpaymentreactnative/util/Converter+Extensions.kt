@@ -7,6 +7,7 @@ import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.Shipping
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
+import java.util.Locale
 
 fun ReadableMap.getStringOrNull(key: String): String? =
   if (hasKey(key)) getString(key) else null
@@ -25,6 +26,9 @@ fun ReadableMap.getArrayOrNull(key: String): ReadableArray? =
 
 fun ReadableMap.getMapOrNull(key: String): ReadableMap? =
   if (hasKey(key)) getMap(key) else null
+
+fun ReadableMap.toLocale(): Locale? =
+  getStringOrNull("lang")?.let { Locale.forLanguageTag(it.replace('_', '-')) }
 
 fun ReadableMap.toShipping(): Shipping? {
   val firstName = getStringOrNull("firstName") ?: getStringOrNull("first_name")
