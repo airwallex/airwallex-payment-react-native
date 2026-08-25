@@ -18,4 +18,5 @@ Pod::Spec.new do |s|
 
   s.dependency 'React-Core'
   s.dependency 'Airwallex', airwallex_version
+  s.dependency 'Airwallex/AirwallexWeChatPay', airwallex_version
 end
