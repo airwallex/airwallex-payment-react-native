@@ -33,7 +33,7 @@ import { useEffect, useState } from 'react';
 
 import PaymentConsentCreator from './util/PaymentConsentCreator';
 import {
-  NULL_LANG_OPTION,
+  DEFAULT_LANG_OPTION,
   SUPPORTED_LANG_OPTIONS,
 } from './util/supportedLanguages';
 
@@ -67,7 +67,7 @@ function Main() {
   const { showActionSheetWithOptions } = useActionSheet();
   const [loading, setLoading] = useState(false);
   const [paymentMode, setPaymentMode] = useState<PaymentMode>('oneOff');
-  const [selectedLang, setSelectedLang] = useState(NULL_LANG_OPTION);
+  const [selectedLang, setSelectedLang] = useState(DEFAULT_LANG_OPTION);
   const [environment, setEnvironment] = useState<Environment>(DEFAULT_ENV);
   const [paymentService, setPaymentService] = useState(
     new PaymentService(DEFAULT_ENV, '', '')
@@ -158,7 +158,8 @@ function Main() {
 
   async function fetchSession(requireCustomerId = false) {
     setLoading(true);
-    const lang = selectedLang === NULL_LANG_OPTION ? undefined : selectedLang;
+    const lang =
+      selectedLang === DEFAULT_LANG_OPTION ? undefined : selectedLang;
     try {
       let session;
       switch (paymentMode) {
