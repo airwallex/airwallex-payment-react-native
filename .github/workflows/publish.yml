@@ -17,14 +17,10 @@ jobs:
         with:
           node-version: ${{ env.NODE-VERSION }}
           registry-url: https://registry.npmjs.org/
-      - name: Build and publish to npm
+      - name: Install
         run: yarn install --frozen-lockfile
-      - name: Upload artifacts
-        run: |
-          echo always-auth=true > .npmrc
-          echo "registry=https://registry.npmjs.org/" >> .npmrc
-          echo //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }} > .npmrc
-          npm publish --access public
+      - name: Publish to npm
+        run: npm publish --access public
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           CI: true
