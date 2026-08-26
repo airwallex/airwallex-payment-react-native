@@ -10,6 +10,8 @@ interface BaseSession {
   isEmailRequired?: boolean;
   currency: string;
   countryCode: string;
+  /** Payment UI locale (e.g. `zh-Hans`, `pt-BR`). Omit for SDK default. */
+  lang?: string;
   amount: number;
   returnUrl?: string;
   googlePayOptions?: GooglePayOptions;

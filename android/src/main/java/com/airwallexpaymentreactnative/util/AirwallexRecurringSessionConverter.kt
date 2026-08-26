@@ -21,6 +21,7 @@ object AirwallexRecurringSessionConverter {
     val currency = sessionMap.getStringOrNull("currency") ?: error("currency is required")
 
     val countryCode = sessionMap.getStringOrNull("countryCode") ?: error("countryCode is required")
+    val locale = sessionMap.toLocale()
 
     val amount = sessionMap.getDoubleOrDefault("amount", -1.0).let {
       if (it == -1.0) error("amount is required")
@@ -54,6 +55,7 @@ object AirwallexRecurringSessionConverter {
       .setReturnUrl(returnUrl)
       .setRequireEmail(isEmailRequired)
       .setPaymentMethods(paymentMethods)
+      .setLocale(locale)
 
     merchantTriggerReason?.let {
       sessionBuilder.setMerchantTriggerReason(merchantTriggerReason)

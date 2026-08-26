@@ -24,6 +24,7 @@ object AirwallexRecurringWithIntentSessionConverter {
 
     val countryCode = sessionMap.getStringOrNull("countryCode")
       ?: error("countryCode is required")
+    val locale = sessionMap.toLocale()
 
     val amount = sessionMap.getDoubleOrDefault("amount", -1.0).let {
       if (it == -1.0) error("amount is required")
@@ -70,6 +71,7 @@ object AirwallexRecurringWithIntentSessionConverter {
       .setReturnUrl(returnUrl)
       .setAutoCapture(autoCapture)
       .setShipping(shipping)
+      .setLocale(locale)
 
     merchantTriggerReason?.let {
       sessionBuilder.setMerchantTriggerReason(merchantTriggerReason)

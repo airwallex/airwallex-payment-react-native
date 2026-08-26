@@ -32,6 +32,10 @@ import type { PaymentResult } from '../../src/types/PaymentResult';
 import { useEffect, useState } from 'react';
 
 import PaymentConsentCreator from './util/PaymentConsentCreator';
+import {
+  DEFAULT_LANG_OPTION,
+  SUPPORTED_LANG_OPTIONS,
+} from './util/supportedLanguages';
 
 type Environment = 'staging' | 'demo' | 'preview';
 type PaymentMode = 'oneOff' | 'recurring' | 'recurringAndPayment';
@@ -63,6 +67,7 @@ function Main() {
   const { showActionSheetWithOptions } = useActionSheet();
   const [loading, setLoading] = useState(false);
   const [paymentMode, setPaymentMode] = useState<PaymentMode>('oneOff');
+  const [selectedLang, setSelectedLang] = useState(DEFAULT_LANG_OPTION);
   const [environment, setEnvironment] = useState<Environment>(DEFAULT_ENV);
   const [paymentService, setPaymentService] = useState(
     new PaymentService(DEFAULT_ENV, '', '')
@@ -131,29 +136,51 @@ function Main() {
     );
   };
 
+  const showLangSheet = () => {
+    const labels = [...SUPPORTED_LANG_OPTIONS, 'Cancel'];
+    showActionSheetWithOptions(
+      {
+        title: 'Language',
+        options: labels,
+        cancelButtonIndex: labels.length - 1,
+      },
+      (selectedIndex) => {
+        if (selectedIndex == null || selectedIndex === labels.length - 1)
+          return;
+        setSelectedLang(SUPPORTED_LANG_OPTIONS[selectedIndex]!);
+      }
+    );
+  };
+
   const paymentModeLabel =
     PAYMENT_MODE_OPTIONS.find((o) => o.value === paymentMode)?.label ??
     'Payment Mode';
 
   async function fetchSession(requireCustomerId = false) {
     setLoading(true);
+    const lang =
+      selectedLang === DEFAULT_LANG_OPTION ? undefined : selectedLang;
     try {
       let session;
       switch (paymentMode) {
         case 'oneOff':
           session = await SessionCreator.createOneOffSession(
             paymentService,
-            requireCustomerId
+            requireCustomerId,
+            lang
           );
           break;
         case 'recurring':
-          session = await SessionCreator.createRecurringSession(paymentService);
+          session = await SessionCreator.createRecurringSession(
+            paymentService,
+            lang
+          );
           break;
         case 'recurringAndPayment':
-          session =
-            await SessionCreator.createRecurringWithIntentSession(
-              paymentService
-            );
+          session = await SessionCreator.createRecurringWithIntentSession(
+            paymentService,
+            lang
+          );
           break;
         default:
           throw new Error('Unknown payment mode');
@@ -279,9 +306,14 @@ function Main() {
           style={styles.loading}
         />
       )}
-      <TouchableOpacity style={styles.picker} onPress={showPaymentModeSheet}>
-        <Text style={styles.pickerText}>{paymentModeLabel}</Text>
-      </TouchableOpacity>
+      <View style={styles.pickerRow}>
+        <TouchableOpacity style={styles.picker} onPress={showPaymentModeSheet}>
+          <Text style={styles.pickerText}>{paymentModeLabel}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.picker} onPress={showLangSheet}>
+          <Text style={styles.pickerText}>lang: {selectedLang}</Text>
+        </TouchableOpacity>
+      </View>
 
       <TouchableOpacity
         style={styles.button}
@@ -395,15 +427,21 @@ const styles = StyleSheet.create({
     left: '50%',
     transform: [{ translateX: -25 }, { translateY: -25 }],
   },
+  pickerRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '80%',
+    marginBottom: 20,
+    gap: 16,
+  },
   picker: {
+    flex: 1,
     paddingVertical: 12,
     paddingHorizontal: 10,
     borderWidth: 1,
     borderColor: 'gray',
     borderRadius: 4,
-    width: '80%',
-    alignSelf: 'center',
-    marginBottom: 20,
     alignItems: 'center',
   },
   pickerText: {

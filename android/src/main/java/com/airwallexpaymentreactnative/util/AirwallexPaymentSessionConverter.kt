@@ -33,6 +33,7 @@ object AirwallexPaymentSessionConverter {
 
     val currency = sessionMap.getStringOrNull("currency") ?: error("Currency is required")
     val countryCode = sessionMap.getStringOrNull("countryCode") ?: error("Country code is required")
+    val locale = sessionMap.toLocale()
     val paymentIntentId =
       sessionMap.getStringOrNull("paymentIntentId") ?: error("PaymentIntentId is required")
 
@@ -60,6 +61,7 @@ object AirwallexPaymentSessionConverter {
       .setHidePaymentConsents(hidePaymentConsents)
       .setPaymentMethods(paymentMethods)
       .setShipping(shipping)
+      .setLocale(locale)
       .build()
   }
 

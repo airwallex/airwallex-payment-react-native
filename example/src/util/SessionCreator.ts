@@ -21,7 +21,8 @@ import { getCustomerParams, getPaymentParams } from '../api/PaymentParams';
 class SessionCreator {
   static async createOneOffSession(
     paymentService: PaymentService,
-    requireCustomerId: boolean = false
+    requireCustomerId: boolean = false,
+    lang?: string
   ): Promise<PaymentSession> {
     try {
       let customerId = null;
@@ -110,6 +111,7 @@ class SessionCreator {
         autoCapture: true,
         hidePaymentConsents: false,
         clientSecret: clientSecret,
+        lang,
       };
       return session;
     } catch (error) {
@@ -119,7 +121,8 @@ class SessionCreator {
   }
 
   static async createRecurringSession(
-    paymentService: PaymentService
+    paymentService: PaymentService,
+    lang?: string
   ): Promise<PaymentSession> {
     try {
       const customerInfo =
@@ -150,6 +153,7 @@ class SessionCreator {
         returnUrl: '',
         nextTriggeredBy: NextTriggeredBy.Merchant,
         merchantTriggerReason: MerchantTriggerReason.Scheduled,
+        lang,
       };
       return session;
     } catch (error) {
@@ -159,7 +163,8 @@ class SessionCreator {
   }
 
   static async createRecurringWithIntentSession(
-    paymentService: PaymentService
+    paymentService: PaymentService,
+    lang?: string
   ): Promise<PaymentSession> {
     try {
       const customerInfo =
@@ -205,6 +210,7 @@ class SessionCreator {
         returnUrl: '',
         nextTriggeredBy: NextTriggeredBy.Merchant,
         merchantTriggerReason: MerchantTriggerReason.Scheduled,
+        lang,
       };
       return session;
     } catch (error) {
