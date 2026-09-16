@@ -1,0 +1,4 @@
+code_review:
+    review_channels:
+        - channels:
+              - pa-mobile
