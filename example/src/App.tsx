@@ -338,6 +338,23 @@ function Main() {
       <TouchableOpacity
         style={styles.button}
         onPress={() => {
+          handlePaymentFlowPress((session) =>
+            presentEntirePaymentFlow(session, {
+              layout: 'tab',
+              checkoutButton: {
+                title: `Pay ${session.currency} ${session.amount.toFixed(2)}`,
+              },
+            })
+          );
+        }}
+      >
+        <Text style={styles.buttonText}>
+          PresentEntirePaymentFlow (custom button)
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
           handlePaymentFlowPress(presentCardPaymentFlow);
         }}
       >

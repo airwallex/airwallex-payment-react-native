@@ -13,5 +13,9 @@ extension AWXUIContext.Configuration {
         } else {
             layout = .tab
         }
+        if let checkoutButton = params?["checkoutButton"] as? NSDictionary,
+           let title = checkoutButton["title"] as? String {
+            self.checkoutButton.title = title
+        }
     }
 }
