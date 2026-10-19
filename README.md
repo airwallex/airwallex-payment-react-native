@@ -99,7 +99,14 @@ presentEntirePaymentFlow(session)
 | `payWithCardDetails(session, card, saveCard)` | Your own card UI (PCI-DSS required) |
 | `payWithConsent(session, consent)` | Charge a previously saved payment consent |
 
-Session `type` can be `'OneOff'`, `'Recurring'` (save a method without charging), or `'RecurringWithIntent'` (charge now and save). Optionally pass `{ layout: 'tab' | 'accordion' }` as the second argument to `presentEntirePaymentFlow`.
+Session `type` can be `'OneOff'`, `'Recurring'` (save a method without charging), or `'RecurringWithIntent'` (charge now and save). Optionally pass a configuration as the second argument to `presentEntirePaymentFlow`:
+
+```ts
+presentEntirePaymentFlow(session, {
+  layout: 'tab', // or 'accordion'
+  checkoutButton: { title: 'Pay HKD 50.00' }, // optional, defaults to "Pay" / "Confirm"
+});
+```
 
 A runnable integration lives in [`example/`](./example).
 

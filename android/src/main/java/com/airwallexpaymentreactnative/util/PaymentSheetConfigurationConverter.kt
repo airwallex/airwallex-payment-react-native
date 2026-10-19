@@ -10,6 +10,9 @@ object PaymentSheetConfigurationConverter {
       "accordion" -> PaymentMethodsLayoutType.ACCORDION
       else -> PaymentMethodsLayoutType.TAB
     }
-    return PaymentElementConfiguration.PaymentSheet(layout = layout)
+    val checkoutButtonTitle = map?.getMapOrNull("checkoutButton")?.getStringOrNull("title")
+    val checkoutButton = checkoutButtonTitle?.let { PaymentElementConfiguration.CheckoutButton(it) }
+      ?: PaymentElementConfiguration.CheckoutButton()
+    return PaymentElementConfiguration.PaymentSheet(layout = layout, checkoutButton = checkoutButton)
   }
 }
