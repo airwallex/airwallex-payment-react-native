@@ -116,12 +116,20 @@ export const payWithConsent = async (
   session: PaymentSession,
   consent: PaymentConsent
 ): Promise<PaymentResult> => {
+  const billing = consent.paymentMethod?.billing;
   const transformedConsent = transformKeysToSnakeCase({
     ...consent,
     paymentMethod: transformKeysToSnakeCase({
       ...consent.paymentMethod,
       card: transformKeysToSnakeCase(consent.paymentMethod?.card),
-      billing: transformKeysToSnakeCase(consent.paymentMethod?.billing),
+      // The native consent decoders read snake_case keys, including the
+      // nested billing address (iOS AWXAddress only reads `country_code`).
+      billing: transformKeysToSnakeCase({
+        ...billing,
+        ...(billing?.address && {
+          address: transformKeysToSnakeCase(billing.address),
+        }),
+      }),
     }),
   });
 
